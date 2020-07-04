@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group
+        android:id="@+id/world"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_world"
+            android:title="@string/nav_world" />
+    </group>
+    <group
+        android:id="@+id/sector"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_production"
+            android:title="@string/nav_producton" />
+        <item
+            android:id="@+id/nav_research"
+            android:title="@string/nav_research" />
+        <item
+            android:id="@+id/nav_battle"
+            android:title="@string/nav_battle" />
+
+
+        <item
+            android:id="@+id/nav_time_travel"
+            android:title="@string/nav_time_travel" />
+    </group>
+
+    <group
+        android:id="@+id/menu"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_stats"
+            android:title="@string/nav_stats" />
+        <item
+            android:id="@+id/nav_guide"
+            android:title="@string/nav_guide" />
+        <item
+            android:id="@+id/nav_shop"
+            android:title="@string/nav_shop" />
+        <item
+            android:id="@+id/nav_settings"
+            android:title="@string/nav_settings" />
+
+    </group>
+</menu>
