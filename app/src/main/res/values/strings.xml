@@ -17,7 +17,17 @@
 
 
     <string name="energy_string">Energy</string>
+    <string name="pop_string">Population</string>
+    <string name="year_string">Year</string>
+
     <string name="civtype_string">Type</string>
+
+    <string name="type0_string">Local</string>
+    <string name="type1_string">Planetary</string>
+    <string name="type2_string">Stellar</string>
+    <string name="type3_string">Galactic</string>
+    <string name="type4_string">Universal</string>
+
     <string name="civ_progress_string">Civilization Progress</string>
 
 

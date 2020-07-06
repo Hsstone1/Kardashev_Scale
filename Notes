@@ -1,0 +1,99 @@
+UI
+    Grid based game where you can capture grids to add more people and eventually conquor worlds
+
+
+Game Design
+    Civ 0 - Societal
+        Each sector gives a select resource per second
+            Energy can be used to upgrade a tile
+
+
+
+    Civ 1 - Planetary
+		Unlock time travel
+			lose all progress, but gain a speed bonus from tacheon particles (currency)
+
+
+    Civ 2 - Stellar
+		Create simulation, similar to challenges of itrtg
+            Create alternate universes where you can gain bonuses from completing challenges
+
+
+    Civ 3 - Gallactic
+        Create black holes
+			allows player to research FTL travel  	
+				
+				
+	Civ 4 - Universal
+        Create Anihilation event -- false vaccum
+			Creates a vacuum state higgs field, causing universe to reset
+				ultimate game reset, but unlocks civ 4
+				
+				
+
+
+
+
+
+
+
+
+
+Production
+    Have base tick speed 1 sec = 1 hour
+
+
+Research 		(B) - battle 	(P) - population 	(E) - energy
+    Tech Tree
+		Stage 0: Primates
+			Stone Tools (B)
+				Cleaning Animals (P)
+				Hut Construction (P)
+			Fire (E,B)
+				Cooking meat (P)
+				Clothing (P,B)
+		
+		Stage 1: Hunter-gatherer nomads
+			String (B
+		
+		Stage 2: Agricultural Revolution
+        
+
+
+Battle
+	Battle alien species on tile using population
+
+
+
+Time Travel
+    Unlocks once civ level 1 is reached
+        Resets to civ level 0, but gives a speed bonus of 2x initial, then increase by logarithmically based on civ level above 1
+
+
+
+
+Statistics
+    similar to ITRTG stats page
+
+
+
+
+Guide
+    Similar to antimatter dimensions guide
+
+
+
+
+Shop (IAP)
+    Speed up time passage by 4x ($0.99)
+    Have ads that can speed up time passage for 1 hour and give permenant 1% speed bonus
+
+
+
+
+Settings
+
+
+
+
+

@@ -13,13 +13,14 @@ import android.widget.Button;
 import com.example.hunter.kardashevscale.GameData;
 import com.example.hunter.kardashevscale.R;
 
+import static com.example.hunter.kardashevscale.MainActivity.gameData;
+
 
 public class WorldFragment extends Fragment {
 
     String TAG = "TEST";
 
     Button energyBtn;
-    GameData gameData = new GameData();
 
 
 
@@ -42,8 +43,8 @@ public class WorldFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                gameData.setEnergy(gameData.getEnergy() + 1);
-                Log.d(TAG, "energy: " + gameData.getEnergy());
+                gameData.setPopulation(gameData.getPopulation() /2);
+                Log.d(TAG, "KILLED: " + gameData.getPopulation());
             }
         });
 

@@ -7,22 +7,29 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="8dp">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/nav_world"
             android:textColor="@color/colorAccent"
-            android:textSize="30sp" />
+            android:textSize="30sp"
+            android:textAlignment="center"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Energy"
+            android:text="Thanos"
             android:textSize="12sp"
             android:layout_marginTop="8dp"
-            android:id="@+id/energy_button"/>
+            android:id="@+id/energy_button"
+            android:visibility="visible"
+            android:layout_gravity="center"/>
+
+
+
     </LinearLayout>
     
 

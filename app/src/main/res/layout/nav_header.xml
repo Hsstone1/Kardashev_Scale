@@ -23,12 +23,14 @@
         android:orientation="horizontal">
 
         <ImageView
+            android:id="@+id/civ_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_sunny"
+            android:src="@drawable/ic_type_2"
             android:visibility="visible" />
 
         <TextView
+            android:id="@+id/civ_text"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:fontFamily="monospace"
@@ -47,18 +49,20 @@
         android:fontFamily="monospace"
         android:paddingTop="32dp"
         android:text="@string/civ_progress_string"
-        android:textColor="@color/colorAccent" />
+        android:textColor="@color/colorAccent"
+        android:id="@+id/civ_progress_text"
+        android:textSize="12sp"
+        android:layout_gravity="center"/>
 
 
     <ProgressBar
-        android:id="@+id/energy_progress"
+        android:id="@+id/civ_progress"
         style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:max="100"
         android:progress="33"
         android:progressTint="@color/gold" />
-
 
 
 </LinearLayout>
