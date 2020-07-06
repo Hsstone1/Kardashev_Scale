@@ -21,7 +21,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Thanos"
+            android:text="Add Land"
             android:textSize="12sp"
             android:layout_marginTop="8dp"
             android:id="@+id/energy_button"

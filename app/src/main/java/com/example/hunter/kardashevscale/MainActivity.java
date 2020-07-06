@@ -35,10 +35,12 @@ import Fragments.WorldFragment;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     String TAG = "TEST";
-
     public final static int FPS = 60;
-    public final static int DAYS_IN_YEAR = 365;
-    public final static int MINS_IN_DAY = 1;
+
+    public final static double SECONDS_IN_DAY = 5;
+    public final static double DAYS_IN_YEAR = 365;
+    public final static double SECONDS_IN_YEAR = (SECONDS_IN_DAY / 60) * 60 * DAYS_IN_YEAR;
+
     public final static double ENERGY_TO_CIV_1 = Math.pow(10, 16);
     public final static double ENERGY_TO_CIV_2 = Math.pow(10, 26);
     public final static double ENERGY_TO_CIV_3 = Math.pow(10, 36);
@@ -149,42 +151,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Date currentDate;
             long startMS = startDate.getTime();
             long currentMS;
-            double gameTime, yearTime, difPop;
+            double timeGameRate;
             long count = 0;
-            boolean daySkip = false;
+            boolean timeTooFast = false;
 
-//            if (gameData.getGameSpeed() > 5*Math.pow(10, 5)) {
-//                timeDayText.setVisibility(View.GONE);
-//                daySkip = true;
-//            }
+            if (gameData.getGameSpeed() > 5 * Math.pow(10, 5)) {
+                timeTooFast = true;
+                timeDayText.setVisibility(View.GONE);
+            }
 
             while (true) {
                 count++;
                 currentDate = new Date();
                 currentMS = currentDate.getTime();
-                gameTime = ((currentMS - startMS) * gameData.getGameSpeed()) / 1000;
-                yearTime = gameTime - (gameData.getYear() * DAYS_IN_YEAR * MINS_IN_DAY * 60);
+                timeGameRate = ((currentMS - startMS) * gameData.getGameSpeed() / 1000);
 
-
-                difPop = (calculatePopulation() - gameData.getPopulation());
-                if (difPop > 0) {
-                    gameData.setPopulationPerSec(difPop * gameData.getGameSpeed() / FPS);
+                double totDays = 0;
+                if (!timeTooFast) {
+                    totDays = DAYS_IN_YEAR * (gameData.getYear() - Math.floor(gameData.getYear()));
+                } else {
+                    totDays = gameData.getYear() * DAYS_IN_YEAR;
                 }
-                gameData.setPopulation(calculatePopulation());
+
+                gameData.setDay(totDays);
+                if (totDays <= 0.1) {
+                    gameData.setPopulationPerSec(1);
+                } else {
+                    gameData.setPopulationPerSec((gameData.getPopulation() / timeGameRate) * gameData.getGameSpeed());
+                }
+
+                gameData.setPopulation(calculatePopulation(totDays));
                 gameData.setEnergyPerSec(gameData.getPopulationPerSec() * gameData.getEnergyPerPop());
                 gameData.setEnergy(gameData.getEnergy() + gameData.getEnergyPerSec() / FPS);
+                gameData.setYear(timeGameRate / SECONDS_IN_YEAR);
 
 
-                if (gameData.getDay() > DAYS_IN_YEAR) {
-                    gameData.setYear(gameData.getYear() + 1);
-                    setUIText(timeYearText, "Year " + gameData.formatDouble(gameData.getYear()));
-                    yearTime = 0;
-                }
-                if (!daySkip) {
-                    gameData.setDay(calculateDay(yearTime));
-                    setUIText(timeDayText, gameData.formatDouble(gameData.getDay()));
-                }
-                setUIText(timeYearText, "Year " + gameData.formatSuffix(gameData.getYear()));
+                if (!timeTooFast)
+                    setUIText(timeDayText, gameData.formatDouble(Math.floor(gameData.getDay())));
+                setUIText(timeYearText, "Year " + gameData.formatSuffix(Math.floor(gameData.getYear())));
                 setUIText(popTotText, gameData.formatSuffix(gameData.getPopulation()));
                 setUIText(energyTotText, gameData.formatSuffix(gameData.getEnergy()));
 
@@ -193,6 +197,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     updateNavHeader();
                     setUIText(energyDerText, gameData.formatSuffix(gameData.getEnergyPerSec()) + "/s");
                     setUIText(popDerText, gameData.formatSuffix(gameData.getPopulationPerSec()) + "/s");
+                    //Log.d(TAG, "year: " + gameData.getYear() + "        Day: " + gameData.getDay());
+                    //Log.d(TAG, "POP: " + (gameData.getPopulation() / timeGameRate) * gameData.getGameSpeed());
+
+
                 }
 
                 try {
@@ -205,13 +213,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void initGameVals() {
-
-        gameData.setEnergyPerPop(Math.pow(10, 20));
-        gameData.setTilesCaptured(100);
-        gameData.setLogisticPopulation(LOGISTIC_POPULATION * 10);
-        gameData.setGameSpeed(100);
+        gameData.setEnergyPerPop(Math.pow(10, 2));
+        gameData.setTilesCaptured(1);   //causes immediate bump in population, add extra population to pop/s
+        gameData.setLogisticPopulation(LOGISTIC_POPULATION);
+        gameData.setGameSpeed(Math.pow(10, 0));
         gameData.setEnergy(INIT_POPULATION * gameData.getEnergyPerPop());
     }
+
+    public double calculatePopulation(double totDays) {
+        double supportPop = gameData.getLogisticPopulation() * Math.pow(gameData.getTilesCaptured(), 1.25);
+        return (supportPop / (1 + (supportPop / 200) * Math.exp(RAMP_POPULATION * totDays))) * (Math.pow(0.1 * totDays, .25)) + INIT_POPULATION;
+    }
+
 
     public void updateNavHeader() {
         if (gameData.getEnergy() < ENERGY_TO_CIV_1) {
@@ -248,15 +261,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    public double calculatePopulation() {
-        double totDays = gameData.getYear() * DAYS_IN_YEAR + gameData.getDay();
-        double supportPop = gameData.getLogisticPopulation() * Math.pow(gameData.getTilesCaptured(), 1.25);
-        return (supportPop / (1 + (supportPop / 200) * Math.exp(RAMP_POPULATION * totDays))) * (Math.pow(0.1 * totDays, .25)) + INIT_POPULATION;
-    }
-
-    public double calculateDay(double yearTime) {
-        return Math.floor(yearTime / (MINS_IN_DAY * 60));
-    }
 
     //allows textViews to be edited on the background thread
     private void setUIText(final TextView text, final String value) {
@@ -332,7 +336,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-
     //shows the fragment the user clicked, reducing repetition
     public void showFragment(Fragment fragment) {
         fm.beginTransaction().hide(active).show(fragment).commit();
@@ -341,7 +344,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d(TAG, "showFragment: " + fragment);
 
     }
-
 
     //Closes navigation drawer on back pressed, or quits app when it is closed
     @Override

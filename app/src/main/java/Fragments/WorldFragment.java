@@ -43,8 +43,8 @@ public class WorldFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                gameData.setPopulation(gameData.getPopulation() /2);
-                Log.d(TAG, "KILLED: " + gameData.getPopulation());
+                gameData.setTilesCaptured(gameData.getTilesCaptured() + 1);
+                Log.d(TAG, "Captured: " + gameData.getTilesCaptured());
             }
         });
 
