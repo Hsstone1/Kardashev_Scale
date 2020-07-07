@@ -1,5 +1,6 @@
 package com.example.hunter.kardashevscale;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -70,16 +71,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     //instantiates all fragments so they can be loaded from the start
-    final Fragment worldFragment = new WorldFragment();
-    final Fragment productionFragment = new ProductionFragment();
-    final Fragment researchFragment = new ResearchFragment();
-    final Fragment battleFragment = new BattleFragment();
-    final Fragment timeFragment = new TimeTravelFragment();
-    final Fragment statsFragment = new StatsFragment();
-    final Fragment guideFragment = new GuideFragment();
-    final Fragment shopFragment = new ShopFragment();
-    final Fragment settingsFragment = new SettingsFragment();
-    final FragmentManager fm = getSupportFragmentManager();
+    Fragment worldFragment = new WorldFragment();
+    Fragment productionFragment = new ProductionFragment();
+    Fragment researchFragment = new ResearchFragment();
+    Fragment battleFragment = new BattleFragment();
+    Fragment timeFragment = new TimeTravelFragment();
+    Fragment statsFragment = new StatsFragment();
+    Fragment guideFragment = new GuideFragment();
+    Fragment shopFragment = new ShopFragment();
+    Fragment settingsFragment = new SettingsFragment();
+    FragmentManager fm = getSupportFragmentManager();
     Fragment active = worldFragment;
 
 
@@ -172,13 +173,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } else {
                     totDays = gameData.getYear() * DAYS_IN_YEAR;
                 }
-
+                //calculateFoodSuply(gameData.getPopulation());
                 gameData.setDay(totDays);
-                gameData.setPopulationPerSec(calculatePopulation(totDays) * gameData.getGameSpeed());
+                gameData.setPopulationPerSec(calcPopFood(gameData.getFood()) * gameData.getGameSpeed());
 
 
+                gameData.setFood(gameData.getFood() + gameData.getFoodPerSec() / FPS);
                 gameData.setPopulation(gameData.getPopulation() + gameData.getPopulationPerSec() / FPS);
-                gameData.setEnergyPerSec(gameData.getPopulationPerSec()  * gameData.getEnergyPerPop());
+                gameData.setEnergyPerSec(gameData.getPopulationPerSec() * gameData.getEnergyPerPop());
                 gameData.setEnergy(gameData.getEnergy() + gameData.getEnergyPerSec() / FPS);
                 gameData.setYear(timeGameRate / SECONDS_IN_YEAR);
 
@@ -198,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (count % 10 == 0) {
                     updateNavHeader();
 
+
                     //Log.d(TAG, "year: " + gameData.getYear() + "        Day: " + gameData.getDay());
                     //Log.d(TAG, "POP: " + (gameData.getPopulation() / timeGameRate) * gameData.getGameSpeed());
 
@@ -207,9 +210,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 }
 
-//                if (count % 60 == 0) {
-//                    //once a second
-//                }
+                if (count % 30 == 0) {
+                    setUIText(((WorldFragment) worldFragment).foodText, "Food: " + gameData.formatSuffix(gameData.getFood()));
+                }
 
                 try {
                     Thread.sleep((long) (1000 / FPS));
@@ -219,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
     }
+
 
     public void initGameVals() {
         gameData.setEnergyPerPop(Math.pow(10, 2));
@@ -231,21 +235,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         gameData.setFoodPerSec(100);
     }
 
-    public double calculatePopulation(double totDays) {
-        double supportPop = gameData.getLogisticPopulation();
-        double tileGrowthPop = Math.pow(gameData.getTilesCaptured(), 1.25);
-        double startRate = supportPop / 200;
-//        return (supportPop / (1 + (supportPop / 200) * Math.exp(RAMPa_POPULATION * totDays))) * (Math.pow(0.1 * totDays, .25)) + INIT_POPULATION;
-
-
-        return Math.max(/*(Math.log(Math.cbrt(totDays) * gameData.getTilesCaptured()) * Math.pow(gameData.getTilesCaptured(), 1.2)) + */((((supportPop * tileGrowthPop) * ((1 / 9) * (startRate * Math.exp(RAMP_POPULATION * totDays) * totDays) + ((1 / 7) * (startRate * Math.exp(RAMP_POPULATION * totDays)) + 1))) / (Math.pow(totDays, .75) * (Math.pow(startRate * Math.exp(RAMP_POPULATION * totDays) + 1, 2)))) * Math.log(totDays / Math.pow(tileGrowthPop, .5))), 0);
-    }
+//    public double calculatePopulation(double totDays) {
+//        double supportPop = gameData.getLogisticPopulation();
+//        double tileGrowthPop = Math.pow(gameData.getTilesCaptured(), 1.25);
+//        double startRate = supportPop / 200;
+////        return (supportPop / (1 + (supportPop / 200) * Math.exp(RAMPa_POPULATION * totDays))) * (Math.pow(0.1 * totDays, .25)) + INIT_POPULATION;
+//
+//
+//        return Math.max(/*(Math.log(Math.cbrt(totDays) * gameData.getTilesCaptured()) * Math.pow(gameData.getTilesCaptured(), 1.2)) + */((((supportPop * tileGrowthPop) * ((1 / 9) * (startRate * Math.exp(RAMP_POPULATION * totDays) * totDays) + ((1 / 7) * (startRate * Math.exp(RAMP_POPULATION * totDays)) + 1))) / (Math.pow(totDays, .75) * (Math.pow(startRate * Math.exp(RAMP_POPULATION * totDays) + 1, 2)))) * Math.log(totDays / Math.pow(tileGrowthPop, .5))), 0);
+//    }
 
     //calculates how many people die of old age (1 year)
-//    public double calcPopFood(double food){
-//
-//        return 1.5*Math.sqrt(food - 1) + 2;
-//    }
+    public double calcPopFood(double food) {
+
+        return 1.5 * Math.sqrt(food - 1) + 2;
+    }
+
+
+    public double calculateFoodSuply(double population) {
+        return 0;
+    }
 
 
     public void updateNavHeader() {
