@@ -44,6 +44,7 @@ public class WorldFragment extends Fragment {
             public void onClick(View v) {
 
                 gameData.setTilesCaptured(gameData.getTilesCaptured() + 1);
+                gameData.setEnergyPerPop(gameData.getEnergyPerPop() * 2);
                 Log.d(TAG, "Captured: " + gameData.getTilesCaptured());
             }
         });

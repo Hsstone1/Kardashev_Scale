@@ -1,5 +1,6 @@
 package com.example.hunter.kardashevscale;
 
+import android.util.Log;
 import android.widget.ProgressBar;
 
 import java.util.Map;
@@ -11,6 +12,7 @@ import static com.example.hunter.kardashevscale.MainActivity.ENERGY_TO_CIV_1;
 public class GameData {
     private double energy;
     private double population;
+    private double food;
     private double logisticPopulation;
     private double tilesCaptured;
     private double day;
@@ -24,6 +26,7 @@ public class GameData {
 
     private double energyPerSec;
     private double energyPerPop;
+    private double foodPerSec;
     private double populationPerSec;
     private double gameSpeed;
     private double woodPerSec;
@@ -58,6 +61,14 @@ public class GameData {
         this.tilesCaptured = tilesCaptured;
     }
 
+    public double getFood() {
+        return food;
+    }
+
+    public void setFood(double food) {
+        this.food = food;
+    }
+
     public double getLogisticPopulation() {
         return logisticPopulation;
     }
@@ -80,6 +91,14 @@ public class GameData {
 
     public void setYear(double year) {
         this.year = year;
+    }
+
+    public double getFoodPerSec() {
+        return foodPerSec;
+    }
+
+    public void setFoodPerSec(double foodPerSec) {
+        this.foodPerSec = foodPerSec;
     }
 
     public double getGameSpeed() {
@@ -224,40 +243,17 @@ public class GameData {
 
     //assylias - SO
     private static final NavigableMap<Double, String> suffixes = new TreeMap<>();
+
     static {
-        suffixes.put(Math.pow(10, 3), " K");
-        suffixes.put(Math.pow(10, 6), " M");
-        suffixes.put(Math.pow(10, 9), " B");
-        suffixes.put(Math.pow(10, 12), " T");
-        suffixes.put(Math.pow(10, 15), " q");
-        suffixes.put(Math.pow(10, 18), " Q");
-        suffixes.put(Math.pow(10, 21), " s");
-        suffixes.put(Math.pow(10, 24), " S");
-        suffixes.put(Math.pow(10, 27), " O");
-        suffixes.put(Math.pow(10, 30), " N");
-        suffixes.put(Math.pow(10, 33), " Dc");
-        suffixes.put(Math.pow(10, 36), " uD");
-        suffixes.put(Math.pow(10, 39), " dD");
-        suffixes.put(Math.pow(10, 42), " tD");
-        suffixes.put(Math.pow(10, 45), " qD");
-        suffixes.put(Math.pow(10, 48), " QD");
-        suffixes.put(Math.pow(10, 51), " sD");
-        suffixes.put(Math.pow(10, 54), " SD");
-        suffixes.put(Math.pow(10, 57), " oD");
-        suffixes.put(Math.pow(10, 60), " nD");
-        suffixes.put(Math.pow(10, 63), " Vg");
-        suffixes.put(Math.pow(10, 66), " uV");
-        suffixes.put(Math.pow(10, 69), " dV");
-        suffixes.put(Math.pow(10, 72), " tV");
-        suffixes.put(Math.pow(10, 75), " qV");
-        suffixes.put(Math.pow(10, 78), " QV");
-        suffixes.put(Math.pow(10, 81), " sV");
-        suffixes.put(Math.pow(10, 84), " SV");
-        suffixes.put(Math.pow(10, 87), " oV");
-        suffixes.put(Math.pow(10, 90), " nV");
-        suffixes.put(Math.pow(10, 93), " Tg");
-        suffixes.put(Math.pow(10, 96), " uT");
-        suffixes.put(Math.pow(10, 99), " dT");
+        String[] unitArray = new String[]{" K", " M", " B", " T", " q", " Q", " s", " S", " O", " N", " Dc", " uD", " dD", " tD", " qD", " QD", " sD", " SD", " oD", " nD", " Vg", " uV", " dV", " tV", " qV", " QV", " sV", " SV", " oV", " nV", " Tg", " uT", " dT", " tT", " qT", " QT", " sT", " ST", " oT", " nT", " qQ", " uqQ", " dqQ", " tqQ", " qqQ", " QqQ", " sqQ", " SqQ", " oqQ", " nqQ", " QQ", " uQQ", " dQQ", " tQQ", " qQQ", " QQQ", " sQQ", " SQQ", " oQQ", " nQQ", " sG", " usG", " dsG", " tsG", " qsG", " QsG", " ssG", " SsG", " osG", " nsG", " SG", " uSG", "dSG", " tSG", " qSG", " QSG", " sSG", " SSG", " oSG", " nSG", " oG", " uoG", " doG", " toG", " qoG", " QoG", " soG", " SoG", " ooG", " noG", " nG", " unG", " dnG", " tnG", " qnG", " QnG", " snG", " SnG", " onG", " nnG"};
+        for (int i = 0; i < 100; i++) {
+            suffixes.put(Math.pow(10, 3 + i * 3), unitArray[i]);
+        }
+        suffixes.put(Math.pow(10, 303), " CT");
+        suffixes.put(Math.pow(10, 306), " uuCT");
+        suffixes.put(Math.pow(10, 308), " ");
+
+
     }
 
     //assylias - SO

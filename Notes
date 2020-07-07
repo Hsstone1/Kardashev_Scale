@@ -34,6 +34,16 @@ Game Design
 
 
 
+Game Info
+
+	GameSpeed should max out at 10x default with a logarithmic gain when civ1 is unlocked
+	similar to how egg inc increases prestige eggs but much slower
+
+
+
+
+
+
 
 
 
@@ -54,7 +64,10 @@ Research 		(B) - battle 	(P) - population 	(E) - energy
 				Clothing (P,B)
 		
 		Stage 1: Hunter-gatherer nomads
-			String (B
+			String (P)
+				Simple Ranged (B)
+				Simple Machines (P,E)
+				
 		
 		Stage 2: Agricultural Revolution
         
