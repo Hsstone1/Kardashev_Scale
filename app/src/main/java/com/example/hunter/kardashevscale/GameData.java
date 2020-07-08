@@ -1,19 +1,23 @@
 package com.example.hunter.kardashevscale;
 
-import android.util.Log;
-import android.widget.ProgressBar;
-
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
-import static com.example.hunter.kardashevscale.MainActivity.ENERGY_TO_CIV_1;
+import static com.example.hunter.kardashevscale.MainActivity.gameData;
 
 public class GameData {
+
+    private boolean textSuffix;
+    private boolean numSuffix;
+
     private double energy;
     private double population;
     private double food;
-    private double logisticPopulation;
+    private double foodUpgrades;
+    private double battle;
+    private double battleUpgrades;
+    private double battleTimePenalty;
     private double tilesCaptured;
     private double day;
     private double year;
@@ -36,6 +40,22 @@ public class GameData {
     private double adamantiumPerSec;
     private double exoticMaterialPerSec;
 
+
+    public boolean isTextSuffix() {
+        return textSuffix;
+    }
+
+    public void setTextSuffix(boolean textSuffix) {
+        this.textSuffix = textSuffix;
+    }
+
+    public boolean isNumSuffix() {
+        return numSuffix;
+    }
+
+    public void setNumSuffix(boolean numSuffix) {
+        this.numSuffix = numSuffix;
+    }
 
     public double getEnergy() {
         return energy;
@@ -69,12 +89,37 @@ public class GameData {
         this.food = food;
     }
 
-    public double getLogisticPopulation() {
-        return logisticPopulation;
+
+    public double getFoodUpgrades() {
+        return foodUpgrades;
     }
 
-    public void setLogisticPopulation(double logisticPopulation) {
-        this.logisticPopulation = logisticPopulation;
+    public void setFoodUpgrades(double foodUpgrades) {
+        this.foodUpgrades = foodUpgrades;
+    }
+
+    public double getBattle() {
+        return battle;
+    }
+
+    public void setBattle(double battle) {
+        this.battle = battle;
+    }
+
+    public double getBattleUpgrades() {
+        return battleUpgrades;
+    }
+
+    public void setBattleUpgrades(double battleUpgrades) {
+        this.battleUpgrades = battleUpgrades;
+    }
+
+    public double getBattleTimePenalty() {
+        return battleTimePenalty;
+    }
+
+    public void setBattleTimePenalty(double battleTimePenalty) {
+        this.battleTimePenalty = battleTimePenalty;
     }
 
     public double getDay() {
@@ -232,12 +277,16 @@ public class GameData {
 
 
     //removes the decimal point from doubles
-    public String formatDouble(Double d) {
-        return String.format("%.0f", d);
-    }
-
-    public String formatDoubleOne(Double d) {
-        return String.format("%.1f", d);
+    public String formatDouble(Double d, int numDec) {
+        if (numDec == 0) {
+            return String.format("%.0f", d);
+        } else if (numDec == 1) {
+            return String.format("%.1f", d);
+        } else if (numDec == 2) {
+            return String.format("%.2f", d);
+        } else {
+            return String.format("%.0f", d);
+        }
     }
 
 
@@ -253,6 +302,10 @@ public class GameData {
         suffixes.put(Math.pow(10, 306), " uuCT");
         suffixes.put(Math.pow(10, 308), " ");
 
+//            for (int i = 0; i < 100; i++) {
+//                suffixes.put(Math.pow(10, 3 + i * 3), "e" + (3 + i * 3));
+//            }
+
 
     }
 
@@ -261,7 +314,7 @@ public class GameData {
         //Long.MIN_VALUE == -Long.MIN_VALUE so we need an adjustment here
         if (value == Double.MIN_VALUE) return formatSuffix(Double.MIN_VALUE + 1);
         if (value < 0) return "-" + formatSuffix(-value);
-        if (value < 1000) return formatDouble(value); //deal with easy case
+        if (value < 1000) return formatDouble(value, 0); //deal with easy case
 
         Map.Entry<Double, String> e = suffixes.floorEntry(value);
         Double divideBy = e.getKey();
@@ -269,13 +322,11 @@ public class GameData {
 
         double truncated = value / (divideBy / 10); //the number part of the output times 10
         boolean hasDecimal = truncated < 100 && (truncated / 10d) != (truncated / 10);
-        return hasDecimal ? formatDoubleOne(truncated / 10d) + suffix : formatDoubleOne(truncated / 10) + suffix;
+        return hasDecimal ? formatDouble(truncated / 10d, 1) + suffix : formatDouble(truncated / 10, 1) + suffix;
     }
 
     //makes the progress bar logarithmic
-    public int logProgress(double maxEnergy, double minEnergy) {
-        return (int) Math.sqrt(((getEnergy() - minEnergy) / (maxEnergy - minEnergy)) * 10000);
+    public double civScale() {
+        return Math.max((Math.log10(getEnergy()) - 6) / 10, 0);
     }
-
-
 }

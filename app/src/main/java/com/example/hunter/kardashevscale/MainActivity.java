@@ -1,8 +1,5 @@
 package com.example.hunter.kardashevscale;
 
-import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -38,18 +35,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     String TAG = "TEST";
     public final static int FPS = 60;
 
-    public final static double SECONDS_IN_DAY = 10;
+    public final static double SECONDS_IN_DAY = 1;
     public final static double DAYS_IN_YEAR = 365;
     public final static double SECONDS_IN_YEAR = (SECONDS_IN_DAY / 60) * 60 * DAYS_IN_YEAR;
 
     public final static double ENERGY_TO_CIV_1 = Math.pow(10, 16);
     public final static double ENERGY_TO_CIV_2 = Math.pow(10, 26);
     public final static double ENERGY_TO_CIV_3 = Math.pow(10, 36);
-    public final static double ENERGY_TO_CIV_4 = Math.pow(10, 80);
+    public final static double ENERGY_TO_CIV_4 = Math.pow(10, 46);
 
-    public final static double INIT_POPULATION = 1000;
-    public final static double RAMP_POPULATION = -0.03;   //hits inflection at 100 days
-    public final static double LOGISTIC_POPULATION = 2500;
+    public final static double INIT_POPULATION = 100;
 
     public final static GameData gameData = new GameData();
 
@@ -129,17 +124,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //loads all fragments, then hides all but the main world fragment
         //this prevents fragments from being recreated when navigating to different fragment
-        fm.beginTransaction().add(R.id.fragment_container, settingsFragment, "settings").hide(settingsFragment).commit();
-        fm.beginTransaction().add(R.id.fragment_container, shopFragment, "shop").hide(shopFragment).commit();
-        fm.beginTransaction().add(R.id.fragment_container, guideFragment, "guide").hide(guideFragment).commit();
-        fm.beginTransaction().add(R.id.fragment_container, statsFragment, "stats").hide(statsFragment).commit();
-        fm.beginTransaction().add(R.id.fragment_container, timeFragment, "time").hide(timeFragment).commit();
-        fm.beginTransaction().add(R.id.fragment_container, battleFragment, "battle").hide(battleFragment).commit();
-        fm.beginTransaction().add(R.id.fragment_container, researchFragment, "research").hide(researchFragment).commit();
-        fm.beginTransaction().add(R.id.fragment_container, productionFragment, "production").hide(productionFragment).commit();
-        fm.beginTransaction().add(R.id.fragment_container, worldFragment, "world").commit();
+
 
         initGameVals();
+
+        FragmentRunnable fragRun = new FragmentRunnable();
+        new Thread(fragRun).start();
+
         GameClock runnable = new GameClock();
         new Thread(runnable).start();
     }
@@ -155,7 +146,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             double timeGameRate;
             long count = 0;
             boolean timeTooFast = false;
-            double totDays, daysSinceTileCapture;
+            double totDays;
+            boolean firstCycleRun = false;
 
             if (gameData.getGameSpeed() > 5 * Math.pow(10, 4)) {
                 timeTooFast = true;
@@ -166,27 +158,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 count++;
                 currentDate = new Date();
                 currentMS = currentDate.getTime();
-                timeGameRate = ((currentMS - startMS) * gameData.getGameSpeed() / 1000);
+                timeGameRate = Math.max(((currentMS - startMS) * gameData.getGameSpeed() / 1000), 1);
 
-                if (!timeTooFast) {
-                    totDays = DAYS_IN_YEAR * (gameData.getYear() - Math.floor(gameData.getYear()));
-                } else {
-                    totDays = gameData.getYear() * DAYS_IN_YEAR;
-                }
-                //calculateFoodSuply(gameData.getPopulation());
+
+                totDays = gameData.getYear() * DAYS_IN_YEAR;
+
+                calculateFoodSuply();
                 gameData.setDay(totDays);
-                gameData.setPopulationPerSec(calcPopFood(gameData.getFood()) * gameData.getGameSpeed());
+                gameData.setPopulationPerSec(calcPopulation(gameData.getFood()) * gameData.getGameSpeed());
+                gameData.setBattleTimePenalty(calcBattleTimePenalty(gameData.getYear() * DAYS_IN_YEAR));
 
-
-                gameData.setFood(gameData.getFood() + gameData.getFoodPerSec() / FPS);
+                gameData.setBattle(calcBattle(gameData.getPopulation()) * gameData.getBattleTimePenalty());
+                gameData.setFoodPerSec(Math.max(calcFoodPerSec(), 1));
+                gameData.setFood(Math.max(gameData.getFood() + gameData.getFoodPerSec() / FPS, 0));
                 gameData.setPopulation(gameData.getPopulation() + gameData.getPopulationPerSec() / FPS);
-                gameData.setEnergyPerSec(gameData.getPopulationPerSec() * gameData.getEnergyPerPop());
+                gameData.setEnergyPerSec(Math.max((gameData.getPopulation() / timeGameRate) * gameData.getEnergyPerPop(), 1));
                 gameData.setEnergy(gameData.getEnergy() + gameData.getEnergyPerSec() / FPS);
                 gameData.setYear(timeGameRate / SECONDS_IN_YEAR);
 
 
                 if (!timeTooFast)
-                    setUIText(timeDayText, gameData.formatDouble(Math.floor(gameData.getDay())));
+                    setUIText(timeDayText, gameData.formatDouble(DAYS_IN_YEAR * (gameData.getYear() - Math.floor(gameData.getYear())), 0));
                 setUIText(timeYearText, "Year " + gameData.formatSuffix(Math.floor(gameData.getYear())));
                 setUIText(popTotText, gameData.formatSuffix(gameData.getPopulation()));
                 setUIText(energyTotText, gameData.formatSuffix(gameData.getEnergy()));
@@ -194,15 +186,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (count % 2 == 0) {
                     setUIText(energyDerText, gameData.formatSuffix(gameData.getEnergyPerSec()) + "/s");
                     setUIText(popDerText, gameData.formatSuffix(gameData.getPopulationPerSec()) + "/s");
+                    if (firstCycleRun) {
+                        setUIText(((WorldFragment) worldFragment).foodText, "Food: " + gameData.formatSuffix(gameData.getFood()) + " (" + gameData.formatSuffix(gameData.getFoodPerSec()) + "/s)");
+                        setUIText(((WorldFragment) worldFragment).battleText, "Battle: " + gameData.formatSuffix(gameData.getBattle()) + " (" + gameData.formatDouble(gameData.getBattleTimePenalty(), 2) + "x)");
+
+                    }
                 }
 
                 //slower ui update
                 if (count % 10 == 0) {
                     updateNavHeader();
-
-
-                    //Log.d(TAG, "year: " + gameData.getYear() + "        Day: " + gameData.getDay());
-                    //Log.d(TAG, "POP: " + (gameData.getPopulation() / timeGameRate) * gameData.getGameSpeed());
 
 //                    if (Double.isNaN(gameData.getEnergy())) {
 //                        Log.d(TAG, "YOU HAVE REACHED INFINITY");
@@ -210,9 +203,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 }
 
+                //this allows text from fragments to be loaded before they are called
                 if (count % 30 == 0) {
-                    setUIText(((WorldFragment) worldFragment).foodText, "Food: " + gameData.formatSuffix(gameData.getFood()));
+                    if (!firstCycleRun)
+                        firstCycleRun = true;
+                    //Log.d(TAG, "Battle Pen: " + gameData.getBattleTimePenalty());
                 }
+
 
                 try {
                     Thread.sleep((long) (1000 / FPS));
@@ -223,16 +220,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    class FragmentRunnable implements Runnable {
+        @Override
+        public void run() {
+
+            fm.beginTransaction().add(R.id.fragment_container, settingsFragment, "settings").hide(settingsFragment).commit();
+            fm.beginTransaction().add(R.id.fragment_container, shopFragment, "shop").hide(shopFragment).commit();
+            fm.beginTransaction().add(R.id.fragment_container, guideFragment, "guide").hide(guideFragment).commit();
+            fm.beginTransaction().add(R.id.fragment_container, statsFragment, "stats").hide(statsFragment).commit();
+            fm.beginTransaction().add(R.id.fragment_container, timeFragment, "time").hide(timeFragment).commit();
+            fm.beginTransaction().add(R.id.fragment_container, battleFragment, "battle").hide(battleFragment).commit();
+            fm.beginTransaction().add(R.id.fragment_container, researchFragment, "research").hide(researchFragment).commit();
+            fm.beginTransaction().add(R.id.fragment_container, productionFragment, "production").hide(productionFragment).commit();
+            fm.beginTransaction().add(R.id.fragment_container, worldFragment, "world").commit();
+        }
+    }
 
     public void initGameVals() {
         gameData.setEnergyPerPop(Math.pow(10, 2));
-        gameData.setTilesCaptured(1);
-        gameData.setLogisticPopulation(LOGISTIC_POPULATION);
         gameData.setPopulation(INIT_POPULATION);
-        gameData.setGameSpeed(1);   //max out at 10x normal speed
         gameData.setEnergy(INIT_POPULATION * gameData.getEnergyPerPop());
-        gameData.setFood(10000);
-        gameData.setFoodPerSec(100);
+        gameData.setTilesCaptured(1);
+        gameData.setGameSpeed(1);   //max out at 10x normal speed
+        gameData.setFood(100);  //cannot go bellow 100
+        gameData.setBattleUpgrades(1);
+        gameData.setNumSuffix(false);
+        gameData.setTextSuffix(true);
+
     }
 
 //    public double calculatePopulation(double totDays) {
@@ -245,49 +259,65 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        return Math.max(/*(Math.log(Math.cbrt(totDays) * gameData.getTilesCaptured()) * Math.pow(gameData.getTilesCaptured(), 1.2)) + */((((supportPop * tileGrowthPop) * ((1 / 9) * (startRate * Math.exp(RAMP_POPULATION * totDays) * totDays) + ((1 / 7) * (startRate * Math.exp(RAMP_POPULATION * totDays)) + 1))) / (Math.pow(totDays, .75) * (Math.pow(startRate * Math.exp(RAMP_POPULATION * totDays) + 1, 2)))) * Math.log(totDays / Math.pow(tileGrowthPop, .5))), 0);
 //    }
 
-    //calculates how many people die of old age (1 year)
-    public double calcPopFood(double food) {
+    public double calcPopulation(double food) {
 
-        return 1.5 * Math.sqrt(food - 1) + 2;
+        return Math.max(1.5 * Math.sqrt(food - 1) + 2, 1);
+    }
+
+    public double calcBattle(double population) {
+
+        return population * gameData.getBattleUpgrades();
     }
 
 
-    public double calculateFoodSuply(double population) {
-        return 0;
+    public void calculateFoodSuply() {
+        gameData.setFood(Math.max((gameData.getFood() - 0.01 * gameData.getPopulation()), 1));
+        gameData.setFoodPerSec(gameData.getFoodPerSec());
+        if (gameData.getFood() < 1000) {
+            gameData.setPopulation(gameData.getPopulation() * .99);
+        } else if (gameData.getFood() < 10000) {
+            gameData.setPopulation(gameData.getPopulation() * .999);
+        } else if (gameData.getFood() < 100000) {
+            gameData.setPopulation(gameData.getPopulation() * .9999);
+        }
+    }
+
+    public double calcFoodPerSec() {
+        return (1000 * Math.max(Math.floor(Math.pow(gameData.getTilesCaptured(), 1.1)), 0) * Math.log10(.1 * gameData.getPopulation()));
+    }
+
+    public double calcBattleTimePenalty(double totDays) {
+        return (1 / (1 + 100 * Math.exp(-0.006 * totDays)));
     }
 
 
     public void updateNavHeader() {
         if (gameData.getEnergy() < ENERGY_TO_CIV_1) {
-            setUIProgress(civProgress, gameData.logProgress(ENERGY_TO_CIV_1, 0));
+            setUIProgress(civProgress, (int) Math.floor(100 * gameData.civScale()));
             setUIText(civText, getString(R.string.type0_string));
             setUIImage(civIcon, R.drawable.ic_type_0);  //local
-            setUIText(civProgressText, getString(R.string.civ_progress_string) + " (Type " + gameData.logProgress(ENERGY_TO_CIV_1, 0) / 100f + ")");
 
         } else if (gameData.getEnergy() < ENERGY_TO_CIV_2) {
-            setUIProgress(civProgress, gameData.logProgress(ENERGY_TO_CIV_2, ENERGY_TO_CIV_1));
+            setUIProgress(civProgress, (int) Math.floor(100 * gameData.civScale()) - 100);
             setUIText(civText, getString(R.string.type1_string));
             setUIImage(civIcon, R.drawable.ic_type_1);  //planetary
-            setUIText(civProgressText, getString(R.string.civ_progress_string) + " (Type " + gameData.logProgress(ENERGY_TO_CIV_2, ENERGY_TO_CIV_1) / 100f + ")");
 
         } else if (gameData.getEnergy() < ENERGY_TO_CIV_3) {
-            setUIProgress(civProgress, gameData.logProgress(ENERGY_TO_CIV_3, ENERGY_TO_CIV_2));
+            setUIProgress(civProgress, (int) Math.floor(100 * gameData.civScale()) - 200);
             setUIText(civText, getString(R.string.type2_string));
             setUIImage(civIcon, R.drawable.ic_type_2);  //stellar
-            setUIText(civProgressText, getString(R.string.civ_progress_string) + " (Type " + gameData.logProgress(ENERGY_TO_CIV_3, ENERGY_TO_CIV_2) / 100f + ")");
 
         } else if (gameData.getEnergy() < ENERGY_TO_CIV_4) {
-            setUIProgress(civProgress, gameData.logProgress(ENERGY_TO_CIV_4, ENERGY_TO_CIV_3));
+            setUIProgress(civProgress, (int) Math.floor(100 * gameData.civScale()) - 300);
             setUIText(civText, getString(R.string.type3_string));
             setUIImage(civIcon, R.drawable.ic_type_3);  //galactic
-            setUIText(civProgressText, getString(R.string.civ_progress_string) + " (Type " + gameData.logProgress(ENERGY_TO_CIV_4, ENERGY_TO_CIV_3) / 100f + ")");
 
         } else {
-            setUIProgress(civProgress, gameData.logProgress(1e308, ENERGY_TO_CIV_4));
+            setUIProgress(civProgress, (int) Math.floor(100 * gameData.civScale()) - 400);
             setUIText(civText, getString(R.string.type4_string));
             setUIImage(civIcon, R.drawable.ic_type_4);  //universal
-            setUIText(civProgressText, getString(R.string.civ_progress_string) + " (Type " + gameData.logProgress(1e308, ENERGY_TO_CIV_4) / 100f + ")");
         }
+        setUIText(civProgressText, getString(R.string.civ_progress_string) + " (Type " + gameData.formatDouble(gameData.civScale(), 2) + ")");
 
 
     }

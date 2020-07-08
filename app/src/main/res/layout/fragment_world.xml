@@ -1,41 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground">
+    android:background="@color/colorPrimary">
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="8dp">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/nav_world"
-            android:textAlignment="center"
-            android:textColor="@color/colorAccent"
-            android:textSize="30sp" />
-
-        <Button
-            android:id="@+id/energy_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp"
-            android:text="Add Land"
-            android:textSize="12sp"
-            android:visibility="visible" />
 
 
     </LinearLayout>
 
-    <LinearLayout
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/tileGrid_recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="32dp">
+
+    </android.support.v7.widget.RecyclerView>
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/colorPrimary"
         android:orientation="vertical"
@@ -53,32 +51,35 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_food"/>
+                android:src="@drawable/ic_food" />
+
             <TextView
+                android:id="@+id/food_textView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="10"
+                android:layout_gravity="center"
+                android:layout_weight="50"
                 android:fontFamily="monospace"
                 android:text="Food"
                 android:textColor="@color/colorAccent"
-                android:textSize="12sp"
-                android:id="@+id/food_textView"/>
+                android:textSize="10sp" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_battle"/>
+                android:src="@drawable/ic_battle" />
 
             <TextView
+                android:id="@+id/battle_textView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="10"
+                android:layout_gravity="center"
+                android:layout_weight="50"
                 android:fontFamily="monospace"
                 android:text="Battle"
                 android:textColor="@color/colorAccent"
-                android:textSize="12sp"
-                android:id="@+id/battle_textView"/>
+                android:textSize="10sp" />
         </LinearLayout>
 
 
