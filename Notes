@@ -1,5 +1,15 @@
-UI
-    Grid based game where you can capture grids to add more people and eventually conquor worlds
+TODO
+	
+	have the player be able to tap a button to increase the attack by 1.5x, similar to egg inc
+		
+	Have a confirmation when attacking a grid
+		If the grid is much stronger than the player have an altert message tell them that
+		people can die when conqouring a tile, and the birth rate is reduced 10x because people go to battle
+		
+
+
+
+
 
 
 Game Design
@@ -36,12 +46,15 @@ Game Design
 
 Game Info
 
-	GameSpeed should max out at 10x default with a logarithmic gain when civ1 is unlocked
+	GameSpeed should max out at 100x default with a logarithmic gain when civ1 is unlocked
 	similar to how egg inc increases prestige eggs but much slower
 
 
-
-
+	Have 'boss' tiles which allow the learning of a new technological age
+		Have several images that have glowing lines that connect each upgrade from the main tech age upgrade
+			If the user has not unlocked an age yet, then the background is greyed out similar to egg inc, and you cannot see what is .
+		Have other tiles give access to upgrades, and use energy to purchase it
+		
 
 
 

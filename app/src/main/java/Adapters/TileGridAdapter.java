@@ -1,17 +1,24 @@
 package Adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.hunter.kardashevscale.GameData;
+import com.example.hunter.kardashevscale.MainActivity;
 import com.example.hunter.kardashevscale.R;
 
 import java.util.ArrayList;
+
+import static com.example.hunter.kardashevscale.MainActivity.FPS;
+import static com.example.hunter.kardashevscale.MainActivity.gameData;
 
 public class TileGridAdapter extends RecyclerView.Adapter<TileGridAdapter.ViewHolder> {
 
@@ -22,20 +29,26 @@ public class TileGridAdapter extends RecyclerView.Adapter<TileGridAdapter.ViewHo
     private ArrayList<String> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
-
+    private ArrayList<Integer> mTextColors;
     private ArrayList<Boolean> mCaptured;
-
     private ArrayList<Double> mDefense;      //the closer to bottom right the more battle required
     private ArrayList<Double> mResourceWeight;
 
-    public TileGridAdapter(Context context, ArrayList<Boolean> captured, ArrayList<Integer> tileImages, ArrayList<String> data, ArrayList<Double> defense,  ArrayList<Double> resourceWeight) {
+    private ArrayList<Integer> mTileCaptureProgress;
 
+
+    public TileGridAdapter(Context context, ArrayList<Integer>textColors, ArrayList<Boolean> captured, ArrayList<Integer> tileImages, ArrayList<String> data, ArrayList<Double> defense, ArrayList<Double> resourceWeight, ArrayList<Integer> tileCaptureProgress) {
+
+        this.mInflater = LayoutInflater.from(context);
+
+        this.mTextColors = textColors;
         this.mCaptured = captured;
+        this.mTileImages = tileImages;
+        this.mData = data;
         this.mDefense = defense;
         this.mResourceWeight = resourceWeight;
-        this.mData = data;
-        this.mTileImages = tileImages;
-        this.mInflater = LayoutInflater.from(context);
+        this.mTileCaptureProgress = tileCaptureProgress;
+
     }
 
     @NonNull
@@ -50,7 +63,7 @@ public class TileGridAdapter extends RecyclerView.Adapter<TileGridAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
 
         viewHolder.text.setText(mData.get(i));
-
+        viewHolder.text.setTextColor(mTextColors.get(i));
         viewHolder.image.setImageResource(mTileImages.get(i));
 //        viewHolder.image.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -76,7 +89,8 @@ public class TileGridAdapter extends RecyclerView.Adapter<TileGridAdapter.ViewHo
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            text = itemView.findViewById(R.id.info_text);
+            text = itemView.findViewById(R.id.tileGrid_text);
+
             image = itemView.findViewById(R.id.tileGrid_icon);
 
             itemView.setOnClickListener(this);
@@ -85,10 +99,15 @@ public class TileGridAdapter extends RecyclerView.Adapter<TileGridAdapter.ViewHo
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) { mClickListener.onItemClick(view, getAdapterPosition());
+            if (mClickListener != null) {
+                mClickListener.onItemClick(view, getAdapterPosition());
+                //progress.setVisibility(View.VISIBLE);
                 //Log.d(TAG, "CLICKED: " + getAdapterPosition());
             }
         }
+    }
+    public Integer getTextColor(int id){
+        return mTextColors.get(id);
     }
 
     // convenience method for getting data at click position
@@ -96,22 +115,36 @@ public class TileGridAdapter extends RecyclerView.Adapter<TileGridAdapter.ViewHo
         return mData.get(id);
     }
 
-    public Double getDefense(int id){
+    public Double getDefense(int id) {
         return mDefense.get(id);
     }
 
-    public Double getResWeight(int id){
+    public Double getResWeight(int id) {
         return mResourceWeight.get(id);
     }
 
-    public Boolean isCaptured(int id){
+    public Boolean isCaptured(int id) {
         return mCaptured.get(id);
     }
 
-    public void setCaptured(int id){
+    public void setTextColor(int id, int color){
+        mTextColors.set(id, color);
+        notifyItemChanged(id);
+    }
+
+    public void setCaptured(int id) {
         mCaptured.set(id, true);
         mTileImages.set(id, R.drawable.ic_claimed);
-        notifyDataSetChanged();
+        mTextColors.set(id,Color.WHITE);
+        notifyItemChanged(id);       //CANNOT UPDATE VIEW FROM BACKGROUND THREAD
+    }
+
+    public void setProgress(int id, double battle) {
+        mTileCaptureProgress.set(id, (int)(mTileCaptureProgress.get(id) + battle));
+    }
+
+    public int getProgress(int id) {
+        return mTileCaptureProgress.get(id);
     }
 
     //Interface for mClickListener onItemClick

@@ -32,6 +32,20 @@ import Fragments.WorldFragment;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    public void initGameVals() {
+        gameData.setEnergyPerPop(Math.pow(10, 2));
+        gameData.setPopulation(INIT_POPULATION);
+        gameData.setEnergy(INIT_POPULATION * gameData.getEnergyPerPop());
+        gameData.setTilesCaptured(1);
+        gameData.setGameSpeed(1);   //max out at 10x normal speed
+        gameData.setFood(100);  //cannot go bellow 100
+        gameData.setBattleUpgrades(100);  //increases battle per pop
+        gameData.setNumSuffix(false);
+        gameData.setTextSuffix(true);
+
+    }
+
+
     String TAG = "TEST";
     public final static int FPS = 60;
 
@@ -77,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Fragment settingsFragment = new SettingsFragment();
     FragmentManager fm = getSupportFragmentManager();
     Fragment active = worldFragment;
+
 
 
     @Override
@@ -165,9 +180,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 calculateFoodSuply();
                 gameData.setDay(totDays);
-                gameData.setPopulationPerSec(calcPopulation(gameData.getFood()) * gameData.getGameSpeed());
+                if(!gameData.isInBattle()) {
+                    gameData.setPopulationPerSec(calcPopulation(gameData.getFood()) * gameData.getGameSpeed());
+                } else {
+                    gameData.setPopulationPerSec(calcPopulation(gameData.getFood()*.05) * gameData.getGameSpeed());
+                }
                 gameData.setBattleTimePenalty(calcBattleTimePenalty(gameData.getYear() * DAYS_IN_YEAR));
-
                 gameData.setBattle(calcBattle(gameData.getPopulation()) * gameData.getBattleTimePenalty());
                 gameData.setFoodPerSec(Math.max(calcFoodPerSec(), 1));
                 gameData.setFood(Math.max(gameData.getFood() + gameData.getFoodPerSec() / FPS, 0));
@@ -236,18 +254,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void initGameVals() {
-        gameData.setEnergyPerPop(Math.pow(10, 2));
-        gameData.setPopulation(INIT_POPULATION);
-        gameData.setEnergy(INIT_POPULATION * gameData.getEnergyPerPop());
-        gameData.setTilesCaptured(1);
-        gameData.setGameSpeed(1);   //max out at 10x normal speed
-        gameData.setFood(100);  //cannot go bellow 100
-        gameData.setBattleUpgrades(1);
-        gameData.setNumSuffix(false);
-        gameData.setTextSuffix(true);
 
-    }
 
 //    public double calculatePopulation(double totDays) {
 //        double supportPop = gameData.getLogisticPopulation();
@@ -287,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public double calcBattleTimePenalty(double totDays) {
-        return (1 / (1 + 100 * Math.exp(-0.006 * totDays)));
+        return (1 / (1 + 100 * Math.exp(-0.01 * totDays)));
     }
 
 
@@ -324,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     //allows textViews to be edited on the background thread
-    private void setUIText(final TextView text, final String value) {
+    public final void setUIText(final TextView text, final String value) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -334,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     //allows progressBars to be edited on the background thread
-    private void setUIProgress(final ProgressBar progressBar, final int value) {
+    public final void setUIProgress(final ProgressBar progressBar, final int value) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -344,7 +351,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     //allows imageViews to be edited on the background thread
-    private void setUIImage(final ImageView image, final int value) {
+    public final void setUIImage(final ImageView image, final int value) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

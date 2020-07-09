@@ -4,12 +4,11 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
-import static com.example.hunter.kardashevscale.MainActivity.gameData;
-
 public class GameData {
 
     private boolean textSuffix;
     private boolean numSuffix;
+    private boolean inBattle;
 
     private double energy;
     private double population;
@@ -55,6 +54,14 @@ public class GameData {
 
     public void setNumSuffix(boolean numSuffix) {
         this.numSuffix = numSuffix;
+    }
+
+    public boolean isInBattle() {
+        return inBattle;
+    }
+
+    public void setInBattle(boolean inBattle) {
+        this.inBattle = inBattle;
     }
 
     public double getEnergy() {
@@ -329,4 +336,6 @@ public class GameData {
     public double civScale() {
         return Math.max((Math.log10(getEnergy()) - 6) / 10, 0);
     }
+
+
 }
