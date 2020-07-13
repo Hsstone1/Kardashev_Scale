@@ -17,12 +17,7 @@ import UpgradeTree.UpgradeTree;
 
 public class ResearchFragment extends Fragment {
 
-    private static final String TAG="test";
-
-
-
-
-
+    private static final String TAG = "test";
 
 
     @Nullable
@@ -34,12 +29,18 @@ public class ResearchFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.d(TAG, "Upgrade: " + UpgradeTree.stage_0.upgrade_0.getUpgradeName());
         Log.d(TAG, "Upgrade: " + UpgradeTree.stage_0.upgrade_0_0.getUpgradeName());
-        for (int i = 0; i < UpgradeTree.stage_0.upgrade_0_0.getUpgradeCost().length; i++) {
-            Log.d(TAG, "Upgrade: " + UpgradeTree.stage_0.upgrade_0_0.getUpgradeCost()[i]);
-
-        }
         Log.d(TAG, "Upgrade: " + Arrays.toString(UpgradeTree.stage_0.upgrade_0_0.getUpgradeCost()));
+        Log.d(TAG, "Upgrade: " + Arrays.toString(UpgradeTree.stage_0.upgrade_0_0.getUpgradeBonus()));
+        Log.d(TAG, "Upgrade: " + UpgradeTree.stage_0.upgrade_0_0.getParentUpgrade().getUpgradeName());
+
+
+//        for (int i = 0; i < UpgradeTree.stage_0.upgrade_0_0.getUpgradeCost().length; i++) {
+//            Log.d(TAG, "Upgrade: " + UpgradeTree.stage_0.upgrade_0_0.getUpgradeCost()[i]);
+//
+//        }
+//        Log.d(TAG, "Upgrade: " + Arrays.toString(UpgradeTree.stage_0.upgrade_0_0.getUpgradeCost()));
 
     }
 }

@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         gameData.setPopulation(INIT_POPULATION);
         gameData.setEnergy(INIT_POPULATION * gameData.getEnergyPerPop());
         gameData.setTilesCaptured(1);
-        gameData.setFoodBonus(100);
+        gameData.setFoodBonus(1);
         gameData.setFood(100);  //cannot go bellow 100
         gameData.setBattleUpgrades(1);  //increases battle per pop
         gameData.setResourceBonus(1);
@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     gameData.setPopulationPerSec(calcPopulation(gameData.getFood() * .05));
                 }
                 gameData.setBattleTimePenalty(calcBattleTimePenalty(gameData.getYear() * DAYS_IN_YEAR));
-                gameData.setBattle(calcBattle(gameData.getPopulation()) * gameData.getBattleTimePenalty());
+                gameData.setBattle(calcBattle(gameData.getPopulation()) * gameData.getBattleTimePenalty() * .5);    //.5 simulates half male population
                 gameData.setFoodPerSec(Math.max(gameData.getFoodBonus() * calcFoodPerSec(), 1));
                 gameData.setFood(Math.max(gameData.getFood() + gameData.getFoodPerSec() / FPS, 0));
                 gameData.setPopulation(gameData.getPopulation() + gameData.getPopulationPerSec() / FPS);

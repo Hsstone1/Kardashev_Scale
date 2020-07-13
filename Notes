@@ -72,16 +72,18 @@ Production
     Have base tick speed 1 sec = 1 hour
 
 
-Research 		(B) - battle  (F) - Food	(P) - population 	(E) - energy		Tile 1 = first tile
+Research 		(B) - battle  (F) - Food	(P) - production 	(E) - energy		Tile 1 = first tile
     Tech Tree
-		Stage 0: Stone Age - tile 0
+		Stage 0: Stone Age
 			Stone Tools - tile 2
 				Cleaning Animals (F)
 				Mechanical Advantage (P)
+				Leather Clothing (P,B)
+
 			Fire - tile 3
 				Cooking meat (F)
-				Leather Clothing (P,B)
 				Torches (P,B)
+				Sharper Tools (B)
 		
 		Stage 1: Hunter-gatherer Age - tile 5
 			String
