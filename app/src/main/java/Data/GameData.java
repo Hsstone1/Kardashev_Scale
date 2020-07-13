@@ -1,43 +1,52 @@
-package com.example.hunter.kardashevscale;
+package Data;
 
+import android.content.Context;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
-public class GameData {
+public class GameData implements Serializable {
+    private static boolean textSuffix;
+    private static boolean numSuffix;
+    private static boolean inBattle;
 
-    private boolean textSuffix;
-    private boolean numSuffix;
-    private boolean inBattle;
+    private static double energy;
+    private static double population;
+    private static double food;
+    private static double battle;
+    private static double battleTimePenalty;
+    private static double tilesCaptured;
+    private static double day;
+    private static double year;
+    private static double wood;
+    private static double metals;
+    private static double refinedMetals;
+    private static double uranium;
+    private static double adamantium;
+    private static double exoticMaterial;
 
-    private double energy;
-    private double population;
-    private double food;
-    private double foodUpgrades;
-    private double battle;
-    private double battleUpgrades;
-    private double battleTimePenalty;
-    private double tilesCaptured;
-    private double day;
-    private double year;
-    private double wood;
-    private double metals;
-    private double refinedMetals;
-    private double uranium;
-    private double adamantium;
-    private double exoticMaterial;
 
-    private double energyPerSec;
-    private double energyPerPop;
-    private double foodPerSec;
-    private double populationPerSec;
-    private double gameSpeed;
-    private double woodPerSec;
-    private double metalsPerSec;
-    private double refinedMetalsPerSec;
-    private double uraniumPerSec;
-    private double adamantiumPerSec;
-    private double exoticMaterialPerSec;
+    private static double resourceBonus;
+    private static double energyPerSec;
+    private static double energyPerPop;
+    private static double foodPerSec;
+    private static double populationPerSec;
+    private static double foodBonus;
+    private static double woodPerSec;
+    private static double metalsPerSec;
+    private static double refinedMetalsPerSec;
+    private static double uraniumPerSec;
+    private static double adamantiumPerSec;
+    private static double exoticMaterialPerSec;
+
+    private static double energyUpgrades;
+    private static double battleUpgrades;
+    private static double foodUpgrades;
 
 
     public boolean isTextSuffix() {
@@ -153,12 +162,12 @@ public class GameData {
         this.foodPerSec = foodPerSec;
     }
 
-    public double getGameSpeed() {
-        return gameSpeed;
+    public double getFoodBonus() {
+        return foodBonus;
     }
 
-    public void setGameSpeed(double gameSpeed) {
-        this.gameSpeed = gameSpeed;
+    public void setFoodBonus(double gameSpeed) {
+        this.foodBonus = gameSpeed;
     }
 
     public double getWood() {
@@ -209,6 +218,14 @@ public class GameData {
         this.exoticMaterial = exoticMaterial;
     }
 
+
+    public double getResourceBonus() {
+        return resourceBonus;
+    }
+
+    public void setResourceBonus(double resourceBonus) {
+        this.resourceBonus = resourceBonus;
+    }
 
     public double getEnergyPerSec() {
         return energyPerSec;
@@ -336,6 +353,8 @@ public class GameData {
     public double civScale() {
         return Math.max((Math.log10(getEnergy()) - 6) / 10, 0);
     }
+
+
 
 
 }

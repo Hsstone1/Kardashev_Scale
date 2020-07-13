@@ -9,7 +9,6 @@
     tools:context="com.example.hunter.kardashevscale.MainActivity">
 
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -37,11 +36,91 @@
                     android:layout_weight="2"
                     android:orientation="vertical">
 
-                    <ImageView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_population" />
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="4dp"
+                            android:src="@drawable/ic_battle" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="monospace"
+                            android:gravity="end"
+                            android:text="@string/battle_string"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="12sp"
+                            android:layout_gravity="center"/>
+
+                    </LinearLayout>
+
+
+                    <TextView
+                        android:id="@+id/battle_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:gravity="bottom"
+                        android:text="@string/battle_string"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/battle_multi_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:gravity="bottom"
+                        android:text="1.00x"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_gravity="center">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingEnd="4dp"
+                            android:paddingStart="0dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_population" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/pop_string"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorAccent"
+                            android:fontFamily="monospace"
+                            android:gravity="end"
+                            android:textSize="12sp"
+                            android:layout_gravity="center"/>
+
+                    </LinearLayout>
+
 
                     <TextView
                         android:id="@+id/pop_tot_text"
@@ -52,7 +131,7 @@
                         android:text="@string/pop_string"
                         android:textAlignment="center"
                         android:textColor="@color/colorAccent"
-                        android:textSize="14sp" />
+                        android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/pop_der_text"
@@ -71,50 +150,36 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="3"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_energy" />
-
-                    <TextView
-                        android:id="@+id/energy_tot_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="monospace"
-                        android:gravity="bottom"
-                        android:text="@string/energy_string"
-                        android:textAlignment="center"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/energy_der_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="monospace"
-                        android:gravity="bottom"
-                        android:text="/s"
-                        android:textAlignment="center"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="14sp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
                     android:layout_weight="2"
                     android:orientation="vertical">
 
-                    <ImageView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_time" />
+                        android:orientation="horizontal"
+                        android:layout_gravity="center">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingEnd="4dp"
+                            android:paddingStart="0dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_time" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/time_string"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorAccent"
+                            android:fontFamily="monospace"
+                            android:gravity="end"
+                            android:textSize="12sp"
+                            android:layout_gravity="center"/>
+
+                    </LinearLayout>
+
 
                     <TextView
                         android:id="@+id/time_year_text"
@@ -130,8 +195,9 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_gravity="center">
+                        android:layout_gravity="center"
+                        android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -154,7 +220,6 @@
                             android:textSize="14sp" />
 
                     </LinearLayout>
-
 
 
                 </LinearLayout>

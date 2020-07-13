@@ -1,5 +1,8 @@
 package com.example.hunter.kardashevscale;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -17,9 +20,17 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.Objects;
 
+import Data.GameData;
 import Fragments.BattleFragment;
 import Fragments.GuideFragment;
 import Fragments.ProductionFragment;
@@ -30,6 +41,9 @@ import Fragments.StatsFragment;
 import Fragments.TimeTravelFragment;
 import Fragments.WorldFragment;
 
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public void initGameVals() {
@@ -37,9 +51,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         gameData.setPopulation(INIT_POPULATION);
         gameData.setEnergy(INIT_POPULATION * gameData.getEnergyPerPop());
         gameData.setTilesCaptured(1);
-        gameData.setGameSpeed(1);   //max out at 10x normal speed
+        gameData.setFoodBonus(100);
         gameData.setFood(100);  //cannot go bellow 100
-        gameData.setBattleUpgrades(100);  //increases battle per pop
+        gameData.setBattleUpgrades(1);  //increases battle per pop
+        gameData.setResourceBonus(1);
         gameData.setNumSuffix(false);
         gameData.setTextSuffix(true);
 
@@ -60,12 +75,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public final static double INIT_POPULATION = 100;
 
-    public final static GameData gameData = new GameData();
+
+    public static GameData gameData = new GameData();
+
+
+    //public final static double gameDoubleVals[] = new double[]{gameData.getAdamantium(), gameData.getAdamantiumPerSec(), gameData.getBattle(), gameData.getBattleTimePenalty(), gameData.getBattleUpgrades(), gameData.getDay(), gameData.getEnergy(), gameData.getEnergyPerPop(), gameData.getEnergyPerSec(), gameData.getExoticMaterial(), gameData.getExoticMaterialPerSec(), gameData.getFood(), gameData.getFoodBonus(), gameData.getFoodPerSec(), gameData.getFoodUpgrades(), gameData.getMetals(), gameData.getMetalsPerSec(), gameData.getPopulation(), gameData.getPopulationPerSec(), gameData.getRefinedMetals(), gameData.getRefinedMetalsPerSec(), gameData.getResourceBonus(), gameData.getTilesCaptured(), gameData.getUranium(), gameData.getUraniumPerSec(), gameData.getWood(), gameData.getWoodPerSec(), gameData.getYear()};
 
 
     //toolbar
-    private TextView energyTotText;
-    private TextView energyDerText;
+    private TextView battleText;
+    private TextView battleMultiText;
     private TextView popTotText;
     private TextView popDerText;
     private TextView timeYearText;
@@ -77,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ProgressBar civProgress;
     private ImageView civIcon;
     private TextView civProgressText;
+    private TextView civEnergyText;
 
 
     //instantiates all fragments so they can be loaded from the start
@@ -93,15 +113,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Fragment active = worldFragment;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
-        energyTotText = findViewById(R.id.energy_tot_text);
-        energyDerText = findViewById(R.id.energy_der_text);
+        battleText = findViewById(R.id.battle_text);
+        battleMultiText = findViewById(R.id.battle_multi_text);
         popTotText = findViewById(R.id.pop_tot_text);
         popDerText = findViewById(R.id.pop_der_text);
         timeYearText = findViewById(R.id.time_year_text);
@@ -124,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         civProgress = header.findViewById(R.id.civ_progress);
         civIcon = header.findViewById(R.id.civ_icon);
         civProgressText = header.findViewById(R.id.civ_progress_text);
+        civEnergyText = header.findViewById(R.id.energy_text);
 
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -141,7 +161,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //this prevents fragments from being recreated when navigating to different fragment
 
 
+        //if(loadGame("savegame") == null)
         initGameVals();
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, 1);
+        }
+
+        //gameData = loadGame("savegame");
+
 
         FragmentRunnable fragRun = new FragmentRunnable();
         new Thread(fragRun).start();
@@ -164,30 +191,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             double totDays;
             boolean firstCycleRun = false;
 
-            if (gameData.getGameSpeed() > 5 * Math.pow(10, 4)) {
-                timeTooFast = true;
-                timeDayText.setVisibility(View.GONE);
-            }
 
             while (true) {
                 count++;
                 currentDate = new Date();
                 currentMS = currentDate.getTime();
-                timeGameRate = Math.max(((currentMS - startMS) * gameData.getGameSpeed() / 1000), 1);
+                timeGameRate = Math.max(((currentMS - startMS) / 1000), 1);
 
 
                 totDays = gameData.getYear() * DAYS_IN_YEAR;
 
                 calculateFoodSuply();
                 gameData.setDay(totDays);
-                if(!gameData.isInBattle()) {
-                    gameData.setPopulationPerSec(calcPopulation(gameData.getFood()) * gameData.getGameSpeed());
+                if (!gameData.isInBattle()) {
+                    gameData.setPopulationPerSec(calcPopulation(gameData.getFood()));
+                    gameData.setPopulation(gameData.getPopulation() * .999);    //simulates battle deaths
                 } else {
-                    gameData.setPopulationPerSec(calcPopulation(gameData.getFood()*.05) * gameData.getGameSpeed());
+                    gameData.setPopulationPerSec(calcPopulation(gameData.getFood() * .05));
                 }
                 gameData.setBattleTimePenalty(calcBattleTimePenalty(gameData.getYear() * DAYS_IN_YEAR));
                 gameData.setBattle(calcBattle(gameData.getPopulation()) * gameData.getBattleTimePenalty());
-                gameData.setFoodPerSec(Math.max(calcFoodPerSec(), 1));
+                gameData.setFoodPerSec(Math.max(gameData.getFoodBonus() * calcFoodPerSec(), 1));
                 gameData.setFood(Math.max(gameData.getFood() + gameData.getFoodPerSec() / FPS, 0));
                 gameData.setPopulation(gameData.getPopulation() + gameData.getPopulationPerSec() / FPS);
                 gameData.setEnergyPerSec(Math.max((gameData.getPopulation() / timeGameRate) * gameData.getEnergyPerPop(), 1));
@@ -199,14 +223,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     setUIText(timeDayText, gameData.formatDouble(DAYS_IN_YEAR * (gameData.getYear() - Math.floor(gameData.getYear())), 0));
                 setUIText(timeYearText, "Year " + gameData.formatSuffix(Math.floor(gameData.getYear())));
                 setUIText(popTotText, gameData.formatSuffix(gameData.getPopulation()));
-                setUIText(energyTotText, gameData.formatSuffix(gameData.getEnergy()));
+                setUIText(battleText, gameData.formatSuffix(gameData.getBattle()));
 
                 if (count % 2 == 0) {
-                    setUIText(energyDerText, gameData.formatSuffix(gameData.getEnergyPerSec()) + "/s");
+                    if(gameData.getBattleUpgrades() * gameData.getBattleTimePenalty() < 1) {
+                        setUIText(battleMultiText, gameData.formatDouble(gameData.getBattleTimePenalty() * gameData.getBattleUpgrades(),2) + "x");
+                    } else {
+                        setUIText(battleMultiText, gameData.formatSuffix(gameData.getBattleTimePenalty() * gameData.getBattleUpgrades()) + "x");
+                    }
                     setUIText(popDerText, gameData.formatSuffix(gameData.getPopulationPerSec()) + "/s");
                     if (firstCycleRun) {
                         setUIText(((WorldFragment) worldFragment).foodText, "Food: " + gameData.formatSuffix(gameData.getFood()) + " (" + gameData.formatSuffix(gameData.getFoodPerSec()) + "/s)");
-                        setUIText(((WorldFragment) worldFragment).battleText, "Battle: " + gameData.formatSuffix(gameData.getBattle()) + " (" + gameData.formatDouble(gameData.getBattleTimePenalty(), 2) + "x)");
+                        //setUIText(((WorldFragment) worldFragment).battleText, "Battle: " + gameData.formatSuffix(gameData.getBattle()) + " (" + gameData.formatDouble(gameData.getBattleTimePenalty(), 2) + "x)");
 
                     }
                 }
@@ -225,7 +253,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (count % 30 == 0) {
                     if (!firstCycleRun)
                         firstCycleRun = true;
-                    //Log.d(TAG, "Battle Pen: " + gameData.getBattleTimePenalty());
+                }
+
+                if (count % 6000 == 0) {
+                    //saveGame("savegame");
+                    //writeToFile(getApplicationContext(), "savegame", String.valueOf(gameData));
+                    //Log.d(TAG, "GAME DATA: " + saveGameWriteFormat());
                 }
 
 
@@ -255,12 +288,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-
 //    public double calculatePopulation(double totDays) {
 //        double supportPop = gameData.getLogisticPopulation();
 //        double tileGrowthPop = Math.pow(gameData.getTilesCaptured(), 1.25);
 //        double startRate = supportPop / 200;
-////        return (supportPop / (1 + (supportPop / 200) * Math.exp(RAMPa_POPULATION * totDays))) * (Math.pow(0.1 * totDays, .25)) + INIT_POPULATION;
+////        return (supportPop / (1 + (supportPop / 200) * Math.exp(RAMP_POPULATION * totDays))) * (Math.pow(0.1 * totDays, .25)) + INIT_POPULATION;
 //
 //
 //        return Math.max(/*(Math.log(Math.cbrt(totDays) * gameData.getTilesCaptured()) * Math.pow(gameData.getTilesCaptured(), 1.2)) + */((((supportPop * tileGrowthPop) * ((1 / 9) * (startRate * Math.exp(RAMP_POPULATION * totDays) * totDays) + ((1 / 7) * (startRate * Math.exp(RAMP_POPULATION * totDays)) + 1))) / (Math.pow(totDays, .75) * (Math.pow(startRate * Math.exp(RAMP_POPULATION * totDays) + 1, 2)))) * Math.log(totDays / Math.pow(tileGrowthPop, .5))), 0);
@@ -325,6 +357,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             setUIImage(civIcon, R.drawable.ic_type_4);  //universal
         }
         setUIText(civProgressText, getString(R.string.civ_progress_string) + " (Type " + gameData.formatDouble(gameData.civScale(), 2) + ")");
+        setUIText(civEnergyText, getString(R.string.energy_string) + ": " + gameData.formatSuffix(gameData.getEnergy()) + " (" + gameData.formatSuffix(gameData.getEnergyPerSec()) +" /s)");
 
 
     }
@@ -409,9 +442,127 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fm.beginTransaction().hide(active).show(fragment).commit();
         active = fragment;
         drawer.closeDrawer(GravityCompat.START);
-        Log.d(TAG, "showFragment: " + fragment);
+        //Log.d(TAG, "showFragment: " + fragment);
 
     }
+
+    public void saveGame(String filename) {
+        try {
+            FileOutputStream fos = getApplication().openFileOutput(filename, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(gameData);
+            Log.d(TAG, "SAVED GAME | ENNERGY:" + gameData.getEnergy());
+            os.close();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public GameData loadGame(String filename){
+        try{
+            FileInputStream fis = getApplication().openFileInput(filename);
+            ObjectInputStream is = new ObjectInputStream(fis);
+            GameData data = (GameData) is.readObject();
+            is.close();
+            fis.close();
+            Log.d(TAG, "LOAD | ENERGY: " + data.getEnergy());
+            return data;
+        } catch (IOException | ClassNotFoundException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+//    private void writeToFile(Context context, String filename, String data) {
+//        try {
+//            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(filename, Context.MODE_PRIVATE));
+//            outputStreamWriter.write(data);
+//            outputStreamWriter.close();
+//        } catch (IOException e) {
+//            Log.e("Exception", "File write failed: " + e.toString());
+//        }
+//    }
+
+
+//    private String readFromFile(Context context, String filename) {
+//
+//        String ret = "";
+//
+//        try {
+//            InputStream inputStream = context.openFileInput(filename);
+//
+//            if (inputStream != null) {
+//                int pos = 0;
+//                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+//                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+//                String receiveString = "";
+//                StringBuilder stringBuilder = new StringBuilder();
+//
+//
+//                while ((receiveString = bufferedReader.readLine()) != null) {
+//                    stringBuilder.append("\n").append(receiveString);
+//                    pos++;
+//
+//                }
+//
+//                inputStream.close();
+//                ret = stringBuilder.toString();
+//            }
+//        } catch (FileNotFoundException e) {
+//            Log.e(TAG, "File not found: " + e.toString());
+//        } catch (IOException e) {
+//            Log.e(TAG, "Can not read file: " + e.toString());
+//        }
+//
+//        return ret;
+//    }
+
+    //gameData.getAdamantium() ,gameData.getAdamantiumpersec() ,gameData.getBattle() ,gameData.getBattletimepenalty() ,gameData.getBattleupgrades() ,gameData.getDay() ,gameData.getEnergy() ,gameData.getEnergyperpop() ,gameData.getEnergypersec() ,gameData.getExoticmaterial() ,gameData.getExoticmaterialpersec() ,gameData.getFood() ,gameData.getFoodbonus() ,gameData.getFoodpersec() ,gameData.getFoodupgrades() ,gameData.getMetals() ,gameData.getMetalspersec() ,gameData.getPopulation() ,gameData.getPopulationpersec() ,gameData.getRefinedmetals() ,gameData.getRefinedmetalspersec() ,gameData.getResourcebonus() ,gameData.getTilescaptured() ,gameData.getUranium() ,gameData.getUraniumpersec() ,gameData.getWood() ,gameData.getWoodpersec() ,gameData.getYear()
+//    public String saveGameWriteFormat() {
+//        StringBuilder s = new StringBuilder();
+//        for (int i = 0; i < gameDoubleVals.length; i++) {
+//            s.append(gameDoubleVals[i]).append("\n");
+//        }
+//        return s.toString();
+//    }
+
+//    public void setGameData(int pos) {
+//        switch (pos) {
+//            case 1:
+//                gameData.setAdamantium();
+//                gameData.setAdamantiumPerSec();
+//                gameData.setBattle();
+//                gameData.setBattleTimePenalty();
+//                gameData.setBattleUpgrades();
+//                gameData.setDay();
+//                gameData.setEnergy();
+//                gameData.setEnergyPerPop();
+//                gameData.setEnergyPerSec();
+//                gameData.setExoticMaterial();
+//                gameData.setExoticMaterialPerSec();
+//                gameData.setFood();
+//                gameData.setFoodBonus();
+//                gameData.setFoodPerSec();
+//                gameData.setFoodUpgrades();
+//                gameData.setMetals();
+//                gameData.setMetalsPerSec();
+//                gameData.setPopulation();
+//                gameData.setPopulationPerSec();
+//                gameData.setRefinedMetals();
+//                gameData.setRefinedMetalsPerSec();
+//                gameData.setResourceBonus();
+//                gameData.setTilesCaptured();
+//                gameData.setUranium();
+//                gameData.setUraniumPerSec();
+//                gameData.setWood();
+//                gameData.setWoodPerSec();
+//                gameData.setYear();
+//
+//
+//        }
+//    }
+
 
     //Closes navigation drawer on back pressed, or quits app when it is closed
     @Override

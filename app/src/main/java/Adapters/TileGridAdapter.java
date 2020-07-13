@@ -4,25 +4,22 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.hunter.kardashevscale.GameData;
-import com.example.hunter.kardashevscale.MainActivity;
 import com.example.hunter.kardashevscale.R;
 
 import java.util.ArrayList;
 
-import static com.example.hunter.kardashevscale.MainActivity.FPS;
 import static com.example.hunter.kardashevscale.MainActivity.gameData;
 
 public class TileGridAdapter extends RecyclerView.Adapter<TileGridAdapter.ViewHolder> {
 
-    private static final String TAG = "CREATION";
+    private static final String TAG = "test";
 
 
     private ArrayList<Integer> mTileImages;
@@ -136,6 +133,9 @@ public class TileGridAdapter extends RecyclerView.Adapter<TileGridAdapter.ViewHo
         mCaptured.set(id, true);
         mTileImages.set(id, R.drawable.ic_claimed);
         mTextColors.set(id,Color.WHITE);
+        gameData.setResourceBonus(gameData.getResourceBonus() + mResourceWeight.get(id));
+        Log.d(TAG, "Resource Bonus: " + gameData.getResourceBonus());
+
         notifyItemChanged(id);       //CANNOT UPDATE VIEW FROM BACKGROUND THREAD
     }
 

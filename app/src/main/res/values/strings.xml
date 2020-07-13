@@ -17,7 +17,9 @@
 
 
     <string name="energy_string">Energy</string>
+    <string name="battle_string">Battle</string>
     <string name="pop_string">Population</string>
+    <string name="time_string">Time</string>
     <string name="year_string">Year</string>
 
     <string name="civtype_string">Type</string>
@@ -29,6 +31,56 @@
     <string name="type4_string">Universal</string>
 
     <string name="civ_progress_string">Civilization Progress</string>
+
+
+    <string name="upgrade0_string">Stone Age</string>
+    <string name="upgrade0_0_string">Stone Tools</string>
+    <string name="upgrade0_0_0_string">Cleaning Animals</string>
+    <string name="upgrade0_0_1_string">Hut Construction</string>
+    <string name="upgrade0_1_string">Fire</string>
+    <string name="upgrade0_1_0_string">Cooking Meat</string>
+    <string name="upgrade0_1_1_string">Leather Clothing</string>
+
+
+    <string name="upgrade1_string">Hunter-Gather Age</string>
+    <string name="upgrade1_0_string">String</string>
+    <string name="upgrade1_0_0_string">Basic Bow</string>
+    <string name="upgrade1_0_1_string">Simple Machines</string>
+    <string name="upgrade1_1_string">Fire</string>
+    <string name="upgrade1_1_0_string">Cooking Meat</string>
+    <string name="upgrade1_1_1_string">Leather Clothing</string>
+
+
+    <string name="upgrade2_string">Agricultural Age</string>
+
+    <string name="upgrade3_string">Copper Age</string>
+
+    <string name="upgrade4_string">Bronze Age</string>
+
+    <string name="upgrade5_string">Iron Age</string>
+
+    <string name="upgrade6_string">Empirical Age</string>
+
+    <string name="upgrade7_string">Medieval Age</string> <!--Maybe change name-->
+
+    <string name="upgrade8_string">Industrial Age</string>
+
+    <string name="upgrade9_string">Technological Age</string>
+
+    <string name="upgrade10_string">Sustainability Age</string>
+
+    <string name="upgrade11_string">Planetary Age</string>
+
+    <string name="upgrade12_string">Stellar Age</string>
+
+
+
+
+
+
+
+
+
 
 
 </resources>

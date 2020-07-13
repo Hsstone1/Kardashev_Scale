@@ -1,10 +1,11 @@
 TODO
 	
-	have the player be able to tap a button to increase the attack by 1.5x, similar to egg inc
+	let the player hold the button to increase the battle by 1.5x, similar to egg inc
+	
+	In the battle fragment allow the player to designate a percentage of the population to increasing battleUpdrade
+
 		
-	Have a confirmation when attacking a grid
-		If the grid is much stronger than the player have an altert message tell them that
-		people can die when conqouring a tile, and the birth rate is reduced 10x because people go to battle
+	Have a confirmation when battle button pushed on a tile with a red text
 		
 
 
@@ -21,18 +22,23 @@ Game Design
 
     Civ 1 - Planetary
 		Unlock time travel
-			lose all progress, but gain a speed bonus from tacheon particles (currency)
+			lose all progress, but gain a food bonus from tacheon particles (currency)
+				
+			day counter is 10x faster when civ_1 onward, reset when progress reset
 
 
     Civ 2 - Stellar
 		Create simulation, similar to challenges of itrtg
             Create alternate universes where you can gain bonuses from completing challenges
+			day counter is 10x faster
+
 
 
     Civ 3 - Gallactic
         Create black holes
 			allows player to research FTL travel  	
-				
+			day counter is 10x faster
+
 				
 	Civ 4 - Universal
         Create Anihilation event -- false vaccum
@@ -46,7 +52,7 @@ Game Design
 
 Game Info
 
-	GameSpeed should max out at 100x default with a logarithmic gain when civ1 is unlocked
+	GameSpeed should max out at 100x default with a logarithmic gain when civ_1 is unlocked
 	similar to how egg inc increases prestige eggs but much slower
 
 
@@ -66,24 +72,132 @@ Production
     Have base tick speed 1 sec = 1 hour
 
 
-Research 		(B) - battle 	(P) - population 	(E) - energy
+Research 		(B) - battle  (F) - Food	(P) - population 	(E) - energy		Tile 1 = first tile
     Tech Tree
-		Stage 0: Primates
-			Stone Tools (B)
-				Cleaning Animals (P)
-				Hut Construction (P)
-			Fire (E,B)
-				Cooking meat (P)
-				Clothing (P,B)
+		Stage 0: Stone Age - tile 0
+			Stone Tools - tile 2
+				Cleaning Animals (F)
+				Mechanical Advantage (P)
+			Fire - tile 3
+				Cooking meat (F)
+				Leather Clothing (P,B)
+				Torches (P,B)
 		
-		Stage 1: Hunter-gatherer nomads
-			String (P)
-				Simple Ranged (B)
-				Simple Machines (P,E)
+		Stage 1: Hunter-gatherer Age - tile 5
+			String
+				Basic Ranged Weaponry (B)
+				Tethered Machines (E)
+			Pottery
+				Food Storage (F)
+				Purify Water (F)
+				
+		Stage 2: Agricultural Age - tile 10
+			Domestication
+				Chicken (F)
+				Cattle (F)
+				Sheep (F)
+				Work Animals (P,E)
+			Cultivation
+				Wheat (F)
+				Rice (F)
+				Honey (F)
+				
+		Stage 3: Copper Age - tile 15
+			Copper Tools(B)
+			Early Metalworking (P,B)
+			Wheel and Axel (F, P)
+		
+		Stage 4: Bronze Age - tile 20	
+			Bronze Tools (B)
+			Commodity Money (P)
+			Oil Lamps (P)
+		      
+		Stage 5: Iron Age - tile 25
+			Iron Tools (B)
+			Coal (E)
+			Gunpowder
+				Explosive Ranged Weaponry(B)
+				Explosive Mining (P)
+		      
+		Stage 6: Empirical Age - tile 30
+			Early Waterworks 
+				Archemides Screw (F)
+				Aquaduct (F)
+				Waterwheel (E)
+			 Establish Governance
+				Large Scale Infastructure (P)
+				Central Currency (P)
+			
+			
+		      
+		Stage 7: Enlightenment Age - tile 35
+			Logical Improvements
+				Early Mathematics (P)
+				Printing Press (P)
+				Capitalism Ideology (P)
+			
+			
+		Stage 8: Industrial Age 
+			Mechanical Machinery - tile 40
+				Spinning Textiles (P)
+				Steam Engine(E,P)
+				Electromagnetics (E, P)
+				Locomotive (F,P)
+			Electricity - Tile 45
+				Light Bulb (P)
+				Telephone (P)
+				Hydroelectric Generators (E)
+				Combustion Engines(P)
+			Material Advancement - tile 50
+				Simple Airplane (P,B)
+				Advanced Weapons (B)
+				
+
+		Stage 9: Technological Age
+			
+			Uranium - tile 55
+				Atomic Bomb (B)
+				Nuclear Power (E)
+				
+			Silicon - tile 60
+				Plastics (F,P)
+				Computer (P)
+					Radar (B,P)
+					Barcode (P)
+					Laser (E,P,B)
+				Television (P)
+			Advanced Propultion  - tile 65
+				Advanced Airplanes (P,B)
+				Rocket Engine (P,B)
+				Satelites (P)
+				
+		Stage 10: Information Age
+			Internet - tile 70
+				Email (P)
+				Online Video (P)
+				
+			Robotics
+				Remote Farming (F)
+				Assembly Robots (P)
+				Bionics (P,B)
+		      
+		Stage 10 Sustainability Age
+			Gene Altaring - tile 80
+				Enchanced Crops (F)
+				Cure Ailments (P)
+			Interplanetary Exploration
+				
+				
+				
+		      
+		Stage 11: Planetary Age - tile 90
+			Atmospheric Control
+				Cloud Seeding (E,F)
+				Greenhouse Gas Control (E,F,P)
 				
 		
-		Stage 2: Agricultural Revolution
-        
+		Stage 12: Stellar Age - tile 100
+				
 
 
 Battle
@@ -118,6 +232,26 @@ Shop (IAP)
 
 
 Settings
+
+
+gameData.getAdamantium() ,gameData.getAdamantiumpersec() ,gameData.getBattle() ,gameData.getBattletimepenalty() ,gameData.getBattleupgrades() ,gameData.getDay() ,gameData.getEnergy() ,gameData.getEnergyperpop() ,gameData.getEnergypersec() ,gameData.getExoticmaterial() ,gameData.getExoticmaterialpersec() ,gameData.getFood() ,gameData.getFoodbonus() ,gameData.getFoodpersec() ,gameData.getFoodupgrades() ,gameData.getMetals() ,gameData.getMetalspersec() ,gameData.getPopulation() ,gameData.getPopulationpersec() ,gameData.getRefinedmetals() ,gameData.getRefinedmetalspersec() ,gameData.getResourcebonus() ,gameData.getTilescaptured() ,gameData.getUranium() ,gameData.getUraniumpersec() ,gameData.getWood() ,gameData.getWoodpersec() ,gameData.getYear()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

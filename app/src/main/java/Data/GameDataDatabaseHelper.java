@@ -12,15 +12,7 @@ public class GameDataDatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "LOG";
     private static final String TABLE_NAME = "game_data";
     private static final String COL1 = "ID";
-    private static final String COL2 = "energy";
-    private static final String COL3 = "gameSpeed";
-    private static final String COL4 = "wood";
-    private static final String COL5 = "food";
-    private static final String COL6 = "metals";
-    private static final String COL7 = "refinedMetals";
-    private static final String COL8 = "uranium";
-    private static final String COL9 = "adamantium";
-    private static final String COL10 = "exoticMaterial";
+    private static final String COL2 = "data";
 
 
 
@@ -44,13 +36,13 @@ public class GameDataDatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean addData(String weatherData) {
+    public boolean addData(String gameData) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(COL2, weatherData);
+        contentValues.put(COL2, gameData);
 
-        Log.d(TAG, "addData: Adding " + weatherData + " to " + TABLE_NAME);
+        Log.d(TAG, "addData: Adding " + gameData + " to " + TABLE_NAME);
 
         long result = db.insert(TABLE_NAME, null, contentValues);
         //if date as inserted incorrectly it will return -1

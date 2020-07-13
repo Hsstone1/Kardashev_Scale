@@ -90,7 +90,7 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
         int bossCount = 1;
         for (int i = 1; i <= GRID_COLS * GRID_ROWS; i++) {
             if (i % 10 == 0) {
-                bossBonus = 3;
+                bossBonus = 2;
                 images.add(R.drawable.ic_bosstexture);
                 bossCount++;
             } else {
@@ -99,7 +99,7 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
             }
 
             captureProgress.add(0);
-            textColors.add(getResources().getColor(R.color.red, null));
+            textColors.add(getResources().getColor(R.color.black, null));
             data.add(String.valueOf(i));
             captured.add(false);
             defense.add(bossBonus * i * i * i * i * 100d * bossCount);
@@ -138,6 +138,7 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
                 }
             }
         });
+
         stopBattleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -173,8 +174,14 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
     class BackgroundRunnable implements Runnable{
         @Override
         public void run() {
+            int count = 0;
             while(true){
+                count++;
                 checkTileColors();
+                if(count %5 == 0){
+                    //Log.d(TAG, "Resource Bonus: " + gameData.getResourceBonus());
+                }
+
                 try {
                     Thread.sleep((long) (2000));
                 } catch (InterruptedException e) {
@@ -201,12 +208,12 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
                        // Log.d(TAG, "run: " + Math.pow(Math.max(1 + Math.log(battleRatio), 0.05), 0.02));
                     }
 
-                    if (count % FPS / 2 == 0) {
+                    if (count % (FPS / 4) == 0) {
                         adapter.setProgress(battleTile, (int) Math.pow(Math.max(battleRatio * (1 - Math.log(battleRatio)), 0), 1.5));
                         updateProgress(captureProgress, captureProgress.getProgress() + (int) Math.pow(Math.max(battleRatio * (1 - Math.log(battleRatio)), 0), 1.5));
                     }
                 } else {
-                    if (count % FPS / 2 == 0) {
+                    if (count % (FPS / 4) == 0) {
                         adapter.setProgress(battleTile, (int) Math.pow(Math.max(battleRatio * (1 + Math.log(battleRatio)), 0), 1.5));
                         updateProgress(captureProgress, captureProgress.getProgress() + (int) Math.pow(Math.max(battleRatio * (1 + Math.log(battleRatio)), 0), 1.5));
                     }
@@ -318,8 +325,10 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
             return getResources().getColor(R.color.lime, null);
         } else if (battle > .7) {
             return getResources().getColor(R.color.yellow, null);
-        } else {
+        } else if ( battle > .15){
             return getResources().getColor(R.color.red, null);
+        } else {
+            return getResources().getColor(R.color.black, null);
         }
     }
     public void checkTileColors(){
@@ -327,7 +336,7 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
             //if(adapter.getTextColor(i) != getResources().getColor(R.color.lime, null)) {
                 updateAdapterColor(i, calcTileColor(gameData.getBattle() / adapter.getDefense(i)));
             //}
-            if(adapter.getDefense(i) / gameData.getBattle() > 10)
+            if(adapter.getDefense(i) / gameData.getBattle() > 20)
                 break;
 
         }
