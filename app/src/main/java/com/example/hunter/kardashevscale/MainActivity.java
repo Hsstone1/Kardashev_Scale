@@ -20,8 +20,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,7 +32,7 @@ import Data.GameData;
 import Fragments.BattleFragment;
 import Fragments.GuideFragment;
 import Fragments.ProductionFragment;
-import Fragments.ResearchFragment;
+import Fragments.UpgradeFragment;
 import Fragments.SettingsFragment;
 import Fragments.ShopFragment;
 import Fragments.StatsFragment;
@@ -47,16 +45,17 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public void initGameVals() {
-        gameData.setEnergyPerPop(Math.pow(10, 2));
+        gameData.setEnergyPerPop(100);
         gameData.setPopulation(INIT_POPULATION);
-        gameData.setEnergy(INIT_POPULATION * gameData.getEnergyPerPop());
+        gameData.setEnergySpent(0);
         gameData.setTilesCaptured(1);
         gameData.setFoodBonus(1);
-        gameData.setFood(100);  //cannot go bellow 100
-        gameData.setBattleUpgrades(1);  //increases battle per pop
-        gameData.setResourceBonus(1);
+        gameData.setFood(1000);  //cannot go bellow 1000
+        gameData.setBattleBonus(1);  //increases battle per pop
+        gameData.setCaptureBonus(1);
         gameData.setNumSuffix(false);
         gameData.setTextSuffix(true);
+        gameData.setProductionBonus(1);
 
     }
 
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static GameData gameData = new GameData();
 
 
-    //public final static double gameDoubleVals[] = new double[]{gameData.getAdamantium(), gameData.getAdamantiumPerSec(), gameData.getBattle(), gameData.getBattleTimePenalty(), gameData.getBattleUpgrades(), gameData.getDay(), gameData.getEnergy(), gameData.getEnergyPerPop(), gameData.getEnergyPerSec(), gameData.getExoticMaterial(), gameData.getExoticMaterialPerSec(), gameData.getFood(), gameData.getFoodBonus(), gameData.getFoodPerSec(), gameData.getFoodUpgrades(), gameData.getMetals(), gameData.getMetalsPerSec(), gameData.getPopulation(), gameData.getPopulationPerSec(), gameData.getRefinedMetals(), gameData.getRefinedMetalsPerSec(), gameData.getResourceBonus(), gameData.getTilesCaptured(), gameData.getUranium(), gameData.getUraniumPerSec(), gameData.getWood(), gameData.getWoodPerSec(), gameData.getYear()};
+    //public final static double gameDoubleVals[] = new double[]{gameData.getAdamantium(), gameData.getAdamantiumPerSec(), gameData.getBattle(), gameData.getTimePenalty(), gameData.getBattleUpgrades(), gameData.getDay(), gameData.getEnergy(), gameData.getEnergyPerPop(), gameData.getEnergyPerSec(), gameData.getExoticMaterial(), gameData.getExoticMaterialPerSec(), gameData.getFood(), gameData.getFoodBonus(), gameData.getFoodPerSec(), gameData.getFoodUpgrades(), gameData.getMetals(), gameData.getMetalsPerSec(), gameData.getPopulation(), gameData.getPopulationPerSec(), gameData.getRefinedMetals(), gameData.getRefinedMetalsPerSec(), gameData.getCaptureBonus(), gameData.getTilesCaptured(), gameData.getUranium(), gameData.getUraniumPerSec(), gameData.getWood(), gameData.getWoodPerSec(), gameData.getYear()};
 
 
     //toolbar
@@ -102,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //instantiates all fragments so they can be loaded from the start
     Fragment worldFragment = new WorldFragment();
     Fragment productionFragment = new ProductionFragment();
-    Fragment researchFragment = new ResearchFragment();
+    Fragment researchFragment = new UpgradeFragment();
     Fragment battleFragment = new BattleFragment();
     Fragment timeFragment = new TimeTravelFragment();
     Fragment statsFragment = new StatsFragment();
@@ -185,10 +184,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Date currentDate;
             long startMS = startDate.getTime();
             long currentMS;
-            double timeGameRate;
             long count = 0;
-            boolean timeTooFast = false;
+            double timeGameRate;
             double totDays;
+            double lastFramePop = gameData.getPopulation();
+            boolean timeTooFast = false;
             boolean firstCycleRun = false;
 
 
@@ -197,25 +197,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 currentDate = new Date();
                 currentMS = currentDate.getTime();
                 timeGameRate = Math.max(((currentMS - startMS) / 1000), 1);
-
-
                 totDays = gameData.getYear() * DAYS_IN_YEAR;
 
                 calculateFoodSuply();
                 gameData.setDay(totDays);
-                if (!gameData.isInBattle()) {
-                    gameData.setPopulationPerSec(calcPopulation(gameData.getFood()));
-                    gameData.setPopulation(gameData.getPopulation() * .999);    //simulates battle deaths
-                } else {
-                    gameData.setPopulationPerSec(calcPopulation(gameData.getFood() * .05));
-                }
-                gameData.setBattleTimePenalty(calcBattleTimePenalty(gameData.getYear() * DAYS_IN_YEAR));
-                gameData.setBattle(calcBattle(gameData.getPopulation()) * gameData.getBattleTimePenalty() * .5);    //.5 simulates half male population
-                gameData.setFoodPerSec(Math.max(gameData.getFoodBonus() * calcFoodPerSec(), 1));
+                gameData.setPopulationPerSec(calcPopulation(gameData.getFood()));
+                gameData.setTimePenalty(calcTimePenalty(gameData.getYear() * DAYS_IN_YEAR, 500));    //500 normal
+                gameData.setBattle(calcBattle(gameData.getPopulation()) * gameData.getTimePenalty() * .5);    //.5 simulates half male population
                 gameData.setFood(Math.max(gameData.getFood() + gameData.getFoodPerSec() / FPS, 0));
                 gameData.setPopulation(gameData.getPopulation() + gameData.getPopulationPerSec() / FPS);
-                gameData.setEnergyPerSec(Math.max((gameData.getPopulation() / timeGameRate) * gameData.getEnergyPerPop(), 1));
-                gameData.setEnergy(gameData.getEnergy() + gameData.getEnergyPerSec() / FPS);
+                gameData.setEnergyPerSec(gameData.getPopulationPerSecREAL() * gameData.getEnergyPerPop() * .25/* * calcTimePenalty(gameData.getYear() * DAYS_IN_YEAR, 1000)*/);
+                gameData.setEnergy(gameData.getEnergy() + (gameData.getEnergyPerSec() / FPS) - gameData.getEnergySpent());
                 gameData.setYear(timeGameRate / SECONDS_IN_YEAR);
 
 
@@ -226,17 +218,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 setUIText(battleText, gameData.formatSuffix(gameData.getBattle()));
 
                 if (count % 2 == 0) {
-                    if(gameData.getBattleUpgrades() * gameData.getBattleTimePenalty() < 1) {
-                        setUIText(battleMultiText, gameData.formatDouble(gameData.getBattleTimePenalty() * gameData.getBattleUpgrades(),2) + "x");
+                    if (gameData.getBattleBonus() * gameData.getTimePenalty() < 1) {
+                        setUIText(battleMultiText, gameData.formatDouble(gameData.getTimePenalty() * gameData.getBattleBonus(), 2) + "x");
                     } else {
-                        setUIText(battleMultiText, gameData.formatSuffix(gameData.getBattleTimePenalty() * gameData.getBattleUpgrades()) + "x");
+                        setUIText(battleMultiText, gameData.formatSuffix(gameData.getTimePenalty() * gameData.getBattleBonus()) + "x");
                     }
-                    setUIText(popDerText, gameData.formatSuffix(gameData.getPopulationPerSec()) + "/s");
+                    setUIText(popDerText, gameData.formatSuffix((gameData.getPopulation() - lastFramePop) * FPS / 2) + "/s");
+                    gameData.setPopulationPerSecREAL((gameData.getPopulation() - lastFramePop) * FPS / 2);
+                    //setUIText(popDerText, gameData.formatSuffix(gameData.getPopulationPerSec()) + "/s");
+
                     if (firstCycleRun) {
                         setUIText(((WorldFragment) worldFragment).foodText, "Food: " + gameData.formatSuffix(gameData.getFood()) + " (" + gameData.formatSuffix(gameData.getFoodPerSec()) + "/s)");
-                        //setUIText(((WorldFragment) worldFragment).battleText, "Battle: " + gameData.formatSuffix(gameData.getBattle()) + " (" + gameData.formatDouble(gameData.getBattleTimePenalty(), 2) + "x)");
 
                     }
+                    lastFramePop = gameData.getPopulation();
                 }
 
                 //slower ui update
@@ -253,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (count % 30 == 0) {
                     if (!firstCycleRun)
                         firstCycleRun = true;
+                    //Log.d(TAG, "E/s: " + (gameData.getEnergyPerSec() / FPS));
                 }
 
                 if (count % 6000 == 0) {
@@ -305,13 +301,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public double calcBattle(double population) {
 
-        return population * gameData.getBattleUpgrades();
+        return population * gameData.getBattleBonus();
     }
-
 
     public void calculateFoodSuply() {
         gameData.setFood(Math.max((gameData.getFood() - 0.01 * gameData.getPopulation()), 1));
-        gameData.setFoodPerSec(gameData.getFoodPerSec());
+        if (gameData.isInBattle()) {
+            gameData.setFoodPerSec(Math.max(gameData.getFoodBonus() * calcFoodPerSec() * .25, 1)); //simulates farmers heading for battle
+        } else {
+            gameData.setFoodPerSec(Math.max(gameData.getFoodBonus() * calcFoodPerSec(), 1));
+        }
         if (gameData.getFood() < 1000) {
             gameData.setPopulation(gameData.getPopulation() * .99);
         } else if (gameData.getFood() < 10000) {
@@ -322,11 +321,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public double calcFoodPerSec() {
-        return (1000 * Math.max(Math.floor(Math.pow(gameData.getTilesCaptured(), 1.1)), 0) * Math.log10(.1 * gameData.getPopulation()));
+        return (500 * Math.max(Math.floor(Math.pow(gameData.getTilesCaptured(), 1.1)), 0) * Math.log10(.1 * gameData.getPopulation()));
     }
 
-    public double calcBattleTimePenalty(double totDays) {
-        return (1 / (1 + 100 * Math.exp(-0.01 * totDays)));
+    public double calcTimePenalty(double totDays, double daysTo90Percent) {
+        return (1 / (1 + 100 * Math.exp(-(6.8 / daysTo90Percent) * totDays)));  //6.8 aligns the formula to the day
     }
 
 
@@ -357,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             setUIImage(civIcon, R.drawable.ic_type_4);  //universal
         }
         setUIText(civProgressText, getString(R.string.civ_progress_string) + " (Type " + gameData.formatDouble(gameData.civScale(), 2) + ")");
-        setUIText(civEnergyText, getString(R.string.energy_string) + ": " + gameData.formatSuffix(gameData.getEnergy()) + " (" + gameData.formatSuffix(gameData.getEnergyPerSec()) +" /s)");
+        setUIText(civEnergyText, getString(R.string.energy_string) + ": " + gameData.formatSuffix(gameData.getEnergy()) + " (" + gameData.formatSuffix(gameData.getEnergyPerSec()) + " /s) watts");
 
 
     }
@@ -459,8 +458,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public GameData loadGame(String filename){
-        try{
+    public GameData loadGame(String filename) {
+        try {
             FileInputStream fis = getApplication().openFileInput(filename);
             ObjectInputStream is = new ObjectInputStream(fis);
             GameData data = (GameData) is.readObject();
@@ -468,7 +467,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fis.close();
             Log.d(TAG, "LOAD | ENERGY: " + data.getEnergy());
             return data;
-        } catch (IOException | ClassNotFoundException e){
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return null;
@@ -533,7 +532,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                gameData.setAdamantium();
 //                gameData.setAdamantiumPerSec();
 //                gameData.setBattle();
-//                gameData.setBattleTimePenalty();
+//                gameData.setTimePenalty();
 //                gameData.setBattleUpgrades();
 //                gameData.setDay();
 //                gameData.setEnergy();
@@ -551,7 +550,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                gameData.setPopulationPerSec();
 //                gameData.setRefinedMetals();
 //                gameData.setRefinedMetalsPerSec();
-//                gameData.setResourceBonus();
+//                gameData.setCaptureBonus();
 //                gameData.setTilesCaptured();
 //                gameData.setUranium();
 //                gameData.setUraniumPerSec();

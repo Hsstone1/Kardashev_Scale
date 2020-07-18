@@ -15,25 +15,28 @@ import java.util.Arrays;
 
 import UpgradeTree.UpgradeTree;
 
-public class ResearchFragment extends Fragment {
+public class UpgradeFragment extends Fragment {
 
     private static final String TAG = "test";
+    private static final UpgradeTree upgradeTree = new UpgradeTree();
+
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_research, container, false);
+        return inflater.inflate(R.layout.fragment_upgrade, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(TAG, "Upgrade: " + UpgradeTree.stage_0.upgrade_0.getUpgradeName());
-        Log.d(TAG, "Upgrade: " + UpgradeTree.stage_0.upgrade_0_0.getUpgradeName());
-        Log.d(TAG, "Upgrade: " + Arrays.toString(UpgradeTree.stage_0.upgrade_0_0.getUpgradeCost()));
-        Log.d(TAG, "Upgrade: " + Arrays.toString(UpgradeTree.stage_0.upgrade_0_0.getUpgradeBonus()));
-        Log.d(TAG, "Upgrade: " + UpgradeTree.stage_0.upgrade_0_0.getParentUpgrade().getUpgradeName());
+        upgradeTree.addUpgrades();
+
+
+
+        Log.d(TAG, "UPGRADE NAME: " + upgradeTree.findUpgrade("Fire").getUpgradeParent()[0].getUpgradeName());
+
 
 
 //        for (int i = 0; i < UpgradeTree.stage_0.upgrade_0_0.getUpgradeCost().length; i++) {
@@ -43,4 +46,5 @@ public class ResearchFragment extends Fragment {
 //        Log.d(TAG, "Upgrade: " + Arrays.toString(UpgradeTree.stage_0.upgrade_0_0.getUpgradeCost()));
 
     }
+
 }

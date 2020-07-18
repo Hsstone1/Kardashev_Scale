@@ -1,52 +1,56 @@
 package Data;
 
-import android.content.Context;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
-public class GameData implements Serializable {
+public class GameData {
     private static boolean textSuffix;
     private static boolean numSuffix;
     private static boolean inBattle;
 
     private static double energy;
+    private static double energyPerSec;
+    private static double energyPerPop;
+    private static double energySpent;
     private static double population;
+    private static double populationPerSec;
+    private static double populationPerSecREAL;
     private static double food;
+    private static double foodPerSec;
     private static double battle;
-    private static double battleTimePenalty;
+    private static double timePenalty;
     private static double tilesCaptured;
     private static double day;
     private static double year;
-    private static double wood;
-    private static double metals;
-    private static double refinedMetals;
-    private static double uranium;
-    private static double adamantium;
-    private static double exoticMaterial;
+    private static double captureBonus;
 
-
-    private static double resourceBonus;
-    private static double energyPerSec;
-    private static double energyPerPop;
-    private static double foodPerSec;
-    private static double populationPerSec;
-    private static double foodBonus;
+    private static double woodCount;
     private static double woodPerSec;
-    private static double metalsPerSec;
-    private static double refinedMetalsPerSec;
+    private static double copperCount;
+    private static double copperPerSec;
+    private static double bronzeCount;
+    private static double bronzePerSec;
+    private static double ironCount;
+    private static double ironPerSec;
+    private static double refinedMetalCount;
+    private static double refinedMetalPerSec;
+    private static double plasticsCount;
+    private static double plasticsPerSec;
+    private static double uraniumCount;
     private static double uraniumPerSec;
-    private static double adamantiumPerSec;
-    private static double exoticMaterialPerSec;
+    private static double fuelCount;
+    private static double fuelPerSec;
+    private static double unobtaniumCount;
+    private static double unobtaniumPerSec;
+    private static double antimatterCount;
+    private static double antimatterPerSec;
 
-    private static double energyUpgrades;
-    private static double battleUpgrades;
-    private static double foodUpgrades;
+
+    private static double energyBonus;
+    private static double battleBonus;
+    private static double foodBonus;
+    private static double productionBonus;
 
 
     public boolean isTextSuffix() {
@@ -54,7 +58,7 @@ public class GameData implements Serializable {
     }
 
     public void setTextSuffix(boolean textSuffix) {
-        this.textSuffix = textSuffix;
+        GameData.textSuffix = textSuffix;
     }
 
     public boolean isNumSuffix() {
@@ -62,7 +66,7 @@ public class GameData implements Serializable {
     }
 
     public void setNumSuffix(boolean numSuffix) {
-        this.numSuffix = numSuffix;
+        GameData.numSuffix = numSuffix;
     }
 
     public boolean isInBattle() {
@@ -70,7 +74,7 @@ public class GameData implements Serializable {
     }
 
     public void setInBattle(boolean inBattle) {
-        this.inBattle = inBattle;
+        GameData.inBattle = inBattle;
     }
 
     public double getEnergy() {
@@ -78,153 +82,7 @@ public class GameData implements Serializable {
     }
 
     public void setEnergy(double energy) {
-        this.energy = energy;
-    }
-
-    public double getPopulation() {
-        return population;
-    }
-
-    public void setPopulation(double population) {
-        this.population = population;
-    }
-
-    public double getTilesCaptured() {
-        return tilesCaptured;
-    }
-
-    public void setTilesCaptured(double tilesCaptured) {
-        this.tilesCaptured = tilesCaptured;
-    }
-
-    public double getFood() {
-        return food;
-    }
-
-    public void setFood(double food) {
-        this.food = food;
-    }
-
-
-    public double getFoodUpgrades() {
-        return foodUpgrades;
-    }
-
-    public void setFoodUpgrades(double foodUpgrades) {
-        this.foodUpgrades = foodUpgrades;
-    }
-
-    public double getBattle() {
-        return battle;
-    }
-
-    public void setBattle(double battle) {
-        this.battle = battle;
-    }
-
-    public double getBattleUpgrades() {
-        return battleUpgrades;
-    }
-
-    public void setBattleUpgrades(double battleUpgrades) {
-        this.battleUpgrades = battleUpgrades;
-    }
-
-    public double getBattleTimePenalty() {
-        return battleTimePenalty;
-    }
-
-    public void setBattleTimePenalty(double battleTimePenalty) {
-        this.battleTimePenalty = battleTimePenalty;
-    }
-
-    public double getDay() {
-        return day;
-    }
-
-    public void setDay(double day) {
-        this.day = day;
-    }
-
-    public double getYear() {
-        return year;
-    }
-
-    public void setYear(double year) {
-        this.year = year;
-    }
-
-    public double getFoodPerSec() {
-        return foodPerSec;
-    }
-
-    public void setFoodPerSec(double foodPerSec) {
-        this.foodPerSec = foodPerSec;
-    }
-
-    public double getFoodBonus() {
-        return foodBonus;
-    }
-
-    public void setFoodBonus(double gameSpeed) {
-        this.foodBonus = gameSpeed;
-    }
-
-    public double getWood() {
-        return wood;
-    }
-
-    public void setWood(double wood) {
-        this.wood = wood;
-    }
-
-    public double getMetals() {
-        return metals;
-    }
-
-    public void setMetals(double metals) {
-        this.metals = metals;
-    }
-
-    public double getRefinedMetals() {
-        return refinedMetals;
-    }
-
-    public void setRefinedMetals(double refinedMetals) {
-        this.refinedMetals = refinedMetals;
-    }
-
-    public double getUranium() {
-        return uranium;
-    }
-
-    public void setUranium(double uranium) {
-        this.uranium = uranium;
-    }
-
-    public double getAdamantium() {
-        return adamantium;
-    }
-
-    public void setAdamantium(double adamantium) {
-        this.adamantium = adamantium;
-    }
-
-    public double getExoticMaterial() {
-        return exoticMaterial;
-    }
-
-    public void setExoticMaterial(double exoticMaterial) {
-        this.exoticMaterial = exoticMaterial;
-    }
-
-
-    public double getResourceBonus() {
-        return resourceBonus;
-    }
-
-    public void setResourceBonus(double resourceBonus) {
-        this.resourceBonus = resourceBonus;
+        GameData.energy = energy;
     }
 
     public double getEnergyPerSec() {
@@ -232,7 +90,7 @@ public class GameData implements Serializable {
     }
 
     public void setEnergyPerSec(double energyPerSec) {
-        this.energyPerSec = energyPerSec;
+        GameData.energyPerSec = energyPerSec;
     }
 
     public double getEnergyPerPop() {
@@ -240,15 +98,23 @@ public class GameData implements Serializable {
     }
 
     public void setEnergyPerPop(double energyPerPop) {
-        this.energyPerPop = energyPerPop;
+        GameData.energyPerPop = energyPerPop;
     }
 
-    public double getWoodPerSec() {
-        return woodPerSec;
+    public double getEnergySpent() {
+        return energySpent;
     }
 
-    public void setWoodPerSec(double woodPerSec) {
-        this.woodPerSec = woodPerSec;
+    public void setEnergySpent(double energySpent) {
+        GameData.energySpent = energySpent;
+    }
+
+    public double getPopulation() {
+        return population;
+    }
+
+    public void setPopulation(double population) {
+        GameData.population = population;
     }
 
     public double getPopulationPerSec() {
@@ -256,23 +122,207 @@ public class GameData implements Serializable {
     }
 
     public void setPopulationPerSec(double populationPerSec) {
-        this.populationPerSec = populationPerSec;
+        GameData.populationPerSec = populationPerSec;
     }
 
-    public double getMetalsPerSec() {
-        return metalsPerSec;
+    public double getPopulationPerSecREAL() {
+        return populationPerSecREAL;
     }
 
-    public void setMetalsPerSec(double metalsPerSec) {
-        this.metalsPerSec = metalsPerSec;
+    public void setPopulationPerSecREAL(double populationPerSecREAL) {
+        GameData.populationPerSecREAL = populationPerSecREAL;
     }
 
-    public double getRefinedMetalsPerSec() {
-        return refinedMetalsPerSec;
+    public double getFood() {
+        return food;
     }
 
-    public void setRefinedMetalsPerSec(double refinedMetalsPerSec) {
-        this.refinedMetalsPerSec = refinedMetalsPerSec;
+    public void setFood(double food) {
+        GameData.food = food;
+    }
+
+    public double getFoodPerSec() {
+        return foodPerSec;
+    }
+
+    public void setFoodPerSec(double foodPerSec) {
+        GameData.foodPerSec = foodPerSec;
+    }
+
+    public double getBattle() {
+        return battle;
+    }
+
+    public void setBattle(double battle) {
+        GameData.battle = battle;
+    }
+
+    public double getTimePenalty() {
+        return timePenalty;
+    }
+
+    public void setTimePenalty(double timePenalty) {
+        GameData.timePenalty = timePenalty;
+    }
+
+    public double getTilesCaptured() {
+        return tilesCaptured;
+    }
+
+    public void setTilesCaptured(double tilesCaptured) {
+        GameData.tilesCaptured = tilesCaptured;
+    }
+
+    public double getDay() {
+        return day;
+    }
+
+    public void setDay(double day) {
+        GameData.day = day;
+    }
+
+    public double getYear() {
+        return year;
+    }
+
+    public void setYear(double year) {
+        GameData.year = year;
+    }
+
+    public double getCaptureBonus() {
+        return captureBonus;
+    }
+
+    public void setCaptureBonus(double resourceBonus) {
+        GameData.captureBonus = resourceBonus;
+    }
+
+    public double getWoodCount() {
+        return woodCount;
+    }
+
+    public void setWoodCount(double woodCount) {
+        GameData.woodCount = woodCount;
+    }
+
+    public double getCopperCount() {
+        return copperCount;
+    }
+
+    public void setCopperCount(double copperCount) {
+        GameData.copperCount = copperCount;
+    }
+
+    public double getBronzeCount() {
+        return bronzeCount;
+    }
+
+    public void setBronzeCount(double bronzeCount) {
+        GameData.bronzeCount = bronzeCount;
+    }
+
+    public double getIronCount() {
+        return ironCount;
+    }
+
+    public void setIronCount(double ironCount) {
+        GameData.ironCount = ironCount;
+    }
+
+    public double getRefinedMetalCount() {
+        return refinedMetalCount;
+    }
+
+    public void setRefinedMetalCount(double refinedMetalCount) {
+        GameData.refinedMetalCount = refinedMetalCount;
+    }
+
+    public double getPlasticsCount() {
+        return plasticsCount;
+    }
+
+    public void setPlasticsCount(double plasticsCount) {
+        GameData.plasticsCount = plasticsCount;
+    }
+
+    public double getUraniumCount() {
+        return uraniumCount;
+    }
+
+    public void setUraniumCount(double uraniumCount) {
+        GameData.uraniumCount = uraniumCount;
+    }
+
+    public double getFuelCount() {
+        return fuelCount;
+    }
+
+    public void setFuelCount(double fuelCount) {
+        GameData.fuelCount = fuelCount;
+    }
+
+    public double getUnobtaniumCount() {
+        return unobtaniumCount;
+    }
+
+    public void setUnobtaniumCount(double unobtaniumCount) {
+        GameData.unobtaniumCount = unobtaniumCount;
+    }
+
+    public double getAntimatterCount() {
+        return antimatterCount;
+    }
+
+    public void setAntimatterCount(double antimatterCount) {
+        GameData.antimatterCount = antimatterCount;
+    }
+
+    public double getWoodPerSec() {
+        return woodPerSec;
+    }
+
+    public void setWoodPerSec(double woodPerSec) {
+        GameData.woodPerSec = woodPerSec;
+    }
+
+    public double getCopperPerSec() {
+        return copperPerSec;
+    }
+
+    public void setCopperPerSec(double copperPerSec) {
+        GameData.copperPerSec = copperPerSec;
+    }
+
+    public double getBronzePerSec() {
+        return bronzePerSec;
+    }
+
+    public void setBronzePerSec(double bronzePerSec) {
+        GameData.bronzePerSec = bronzePerSec;
+    }
+
+    public double getIronPerSec() {
+        return ironPerSec;
+    }
+
+    public void setIronPerSec(double ironPerSec) {
+        GameData.ironPerSec = ironPerSec;
+    }
+
+    public double getRefinedMetalPerSec() {
+        return refinedMetalPerSec;
+    }
+
+    public void setRefinedMetalPerSec(double refinedMetalPerSec) {
+        GameData.refinedMetalPerSec = refinedMetalPerSec;
+    }
+
+    public double getPlasticsPerSec() {
+        return plasticsPerSec;
+    }
+
+    public void setPlasticsPerSec(double plasticsPerSec) {
+        GameData.plasticsPerSec = plasticsPerSec;
     }
 
     public double getUraniumPerSec() {
@@ -280,25 +330,64 @@ public class GameData implements Serializable {
     }
 
     public void setUraniumPerSec(double uraniumPerSec) {
-        this.uraniumPerSec = uraniumPerSec;
+        GameData.uraniumPerSec = uraniumPerSec;
     }
 
-    public double getAdamantiumPerSec() {
-        return adamantiumPerSec;
+    public double getFuelPerSec() {
+        return fuelPerSec;
     }
 
-    public void setAdamantiumPerSec(double adamantiumPerSec) {
-        this.adamantiumPerSec = adamantiumPerSec;
+    public void setFuelPerSec(double fuelPerSec) {
+        GameData.fuelPerSec = fuelPerSec;
     }
 
-    public double getExoticMaterialPerSec() {
-        return exoticMaterialPerSec;
+    public double getUnobtaniumPerSec() {
+        return unobtaniumPerSec;
     }
 
-    public void setExoticMaterialPerSec(double exoticMaterialPerSec) {
-        this.exoticMaterialPerSec = exoticMaterialPerSec;
+    public void setUnobtaniumPerSec(double unobtaniumPerSec) {
+        GameData.unobtaniumPerSec = unobtaniumPerSec;
     }
 
+    public double getAntimatterPerSec() {
+        return antimatterPerSec;
+    }
+
+    public void setAntimatterPerSec(double antimatterPerSec) {
+        GameData.antimatterPerSec = antimatterPerSec;
+    }
+
+    public double getEnergyBonus() {
+        return energyBonus;
+    }
+
+    public void setEnergyBonus(double energyBonus) {
+        GameData.energyBonus = energyBonus;
+    }
+
+    public double getBattleBonus() {
+        return battleBonus;
+    }
+
+    public void setBattleBonus(double battleBonus) {
+        GameData.battleBonus = battleBonus;
+    }
+
+    public double getFoodBonus() {
+        return foodBonus;
+    }
+
+    public void setFoodBonus(double foodBonus) {
+        GameData.foodBonus = foodBonus;
+    }
+
+    public double getProductionBonus() {
+        return productionBonus;
+    }
+
+    public void setProductionBonus(double productionBonus) {
+        GameData.productionBonus = productionBonus;
+    }
 
     //removes the decimal point from doubles
     public String formatDouble(Double d, int numDec) {
@@ -353,8 +442,6 @@ public class GameData implements Serializable {
     public double civScale() {
         return Math.max((Math.log10(getEnergy()) - 6) / 10, 0);
     }
-
-
 
 
 }

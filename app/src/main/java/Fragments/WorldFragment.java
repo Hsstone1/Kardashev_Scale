@@ -102,8 +102,8 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
             textColors.add(getResources().getColor(R.color.black, null));
             data.add(String.valueOf(i));
             captured.add(false);
-            defense.add(bossBonus * i * i * i * i * 100d * bossCount);
-            resourceWeight.add(bossBonus * Math.max(Math.random(), i * bossBonus / (GRID_COLS * GRID_ROWS)) * bossCount);
+            defense.add(bossBonus * Math.pow(i, 4) * 10 * bossCount);
+            resourceWeight.add(bossBonus * Math.max(Math.random(), i * bossBonus / (GRID_COLS * GRID_ROWS)) * bossCount * .1);
         }
 
 
@@ -142,7 +142,6 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
         stopBattleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "STOP BATTLE");
                 stopBattle = true;
                 updateButtonVisibility(stopBattleButton, View.GONE);
                 updateButtonVisibility(battleButton, View.VISIBLE);
@@ -157,7 +156,7 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
                         updateAdapterCaptured(i);
                         battleTile++;
                     } else if(adapter.getDefense(i) < gameData.getBattle()/3) {
-                        toastMessage("You can not easy capture any more land.",Toast.LENGTH_LONG);
+                        //toastMessage("You can not easily capture any more land.",Toast.LENGTH_LONG);
                         break;
                     }
                 }
@@ -167,8 +166,8 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
 
     //prints info when clicked grid tile
     public void onItemClick(View view, int position) {
-        Log.d(TAG, "#" + (position+1) + " | C: " + adapter.isCaptured(position) + " | D: " + gameData.formatSuffix(adapter.getDefense(position)) + " | R: " + gameData.formatSuffix(adapter.getResWeight(position)) + "x");
-        Toast.makeText(getContext(), "#" + (position+1) + " |  C: " + " |  D: " + gameData.formatSuffix(adapter.getDefense(position)) + " |  R: " + gameData.formatSuffix(adapter.getResWeight(position)) + "x", Toast.LENGTH_LONG).show();
+        Log.d(TAG, "#" + (position+1) + " | C: " + adapter.isCaptured(position) + " | D: " + gameData.formatSuffix(adapter.getDefense(position)) + " | R: " + gameData.formatDouble(1+adapter.getResWeight(position),2) + "x");
+        Toast.makeText(getContext(), "#" + (position+1) + " |  D: " + gameData.formatSuffix(adapter.getDefense(position)) + " |  R: " + gameData.formatDouble(1+adapter.getResWeight(position),2) + "x", Toast.LENGTH_LONG).show();
     }
 
     class BackgroundRunnable implements Runnable{
@@ -179,7 +178,7 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
                 count++;
                 checkTileColors();
                 if(count %5 == 0){
-                    //Log.d(TAG, "Resource Bonus: " + gameData.getResourceBonus());
+                    //Log.d(TAG, "Resource Bonus: " + gameData.getCaptureBonus());
                 }
 
                 try {
@@ -219,9 +218,10 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
                     }
                 }
 
-                if (count % 60 == 0) {
-                    Log.d(TAG, "Tile: " + battleTile + " | progress: " + adapter.getProgress(battleTile) + " | Ratio: " + gameData.formatDouble(battleRatio * (1 + Math.log(battleRatio)), 2));
-                }
+                //logs the tile progress when capturing
+//                if (count % 60 == 0) {
+//                    Log.d(TAG, "Tile: " + battleTile + " | progress: " + adapter.getProgress(battleTile) + " | Ratio: " + gameData.formatDouble(battleRatio * (1 + Math.log(battleRatio)), 2));
+//                }
                 if (battleRatio < .1) {
                     toastMessage("You are too weak for this tile. ", Toast.LENGTH_LONG);
                     tileEnd();
@@ -232,6 +232,7 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
                     updateButtonVisibility(stopBattleButton, View.GONE);
                     updateButtonVisibility(battleButton, View.VISIBLE);
                     stopBattle = false;
+                    gameData.setInBattle(false);
                     break;
                 }
 
@@ -253,15 +254,6 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
     }
 
 
-    //    public void updateAdapterProgress(final int position, final int value){
-//        Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                adapter.setProgress(position, value);
-//            }
-//        });
-//    }
-
     public void updateProgress(final ProgressBar progressBar, final int value) {
         Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
             @Override
@@ -277,6 +269,8 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
             public void run() {
                 adapter.setCaptured(position);
                 gameData.setTilesCaptured(gameData.getTilesCaptured() + 1);
+                gameData.setCaptureBonus(gameData.getCaptureBonus() + adapter.getResWeight(position));
+                Log.d(TAG, "Production Bonus: " + gameData.getCaptureBonus() * gameData.getProductionBonus());
                 Log.d(TAG, "CAPTURED");
                 gameData.setInBattle(false);
             }
@@ -320,12 +314,14 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
     }
 
     public int calcTileColor(double battle) {
-        if (battle > 1) {
+        if (battle > 1.2) {
             //Log.d(TAG, "COLOR GREEN");
             return getResources().getColor(R.color.lime, null);
-        } else if (battle > .7) {
+        } else if (battle > 1) {
             return getResources().getColor(R.color.yellow, null);
-        } else if ( battle > .15){
+        } else if (battle > .7) {
+                return getResources().getColor(R.color.orange, null);
+        } else if ( battle > .25){
             return getResources().getColor(R.color.red, null);
         } else {
             return getResources().getColor(R.color.black, null);

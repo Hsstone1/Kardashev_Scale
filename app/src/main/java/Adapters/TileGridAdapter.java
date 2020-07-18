@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +50,7 @@ public class TileGridAdapter extends RecyclerView.Adapter<TileGridAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.tile_grid, parent, false);
+        View view = mInflater.inflate(R.layout.tile_grid_adapter, parent, false);
 
         return new ViewHolder(view);
     }
@@ -133,8 +132,8 @@ public class TileGridAdapter extends RecyclerView.Adapter<TileGridAdapter.ViewHo
         mCaptured.set(id, true);
         mTileImages.set(id, R.drawable.ic_claimed);
         mTextColors.set(id,Color.WHITE);
-        gameData.setResourceBonus(gameData.getResourceBonus() + mResourceWeight.get(id));
-        Log.d(TAG, "Resource Bonus: " + gameData.getResourceBonus());
+        gameData.setCaptureBonus(gameData.getCaptureBonus() + mResourceWeight.get(id));
+        //Log.d(TAG, "Resource Bonus: " + gameData.getCaptureBonus());
 
         notifyItemChanged(id);       //CANNOT UPDATE VIEW FROM BACKGROUND THREAD
     }
