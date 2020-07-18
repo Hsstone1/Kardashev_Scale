@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 calculateFoodSuply();
                 gameData.setDay(totDays);
                 gameData.setPopulationPerSec(calcPopulation(gameData.getFood()));
-                gameData.setTimePenalty(calcTimePenalty(gameData.getYear() * DAYS_IN_YEAR, 500));    //500 normal
+                gameData.setTimePenalty(calcTimePenalty(gameData.getYear() * DAYS_IN_YEAR, 1));    //500 normal
                 gameData.setBattle(calcBattle(gameData.getPopulation()) * gameData.getTimePenalty() * .5);    //.5 simulates half male population
                 gameData.setFood(Math.max(gameData.getFood() + gameData.getFoodPerSec() / FPS, 0));
                 gameData.setPopulation(gameData.getPopulation() + gameData.getPopulationPerSec() / FPS);
@@ -223,7 +223,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     } else {
                         setUIText(battleMultiText, gameData.formatSuffix(gameData.getTimePenalty() * gameData.getBattleBonus()) + "x");
                     }
-                    setUIText(popDerText, gameData.formatSuffix((gameData.getPopulation() - lastFramePop) * FPS / 2) + "/s");
+                    if(Math.abs(gameData.getPopulationPerSecREAL()) > 1) {
+                        setUIText(popDerText, gameData.formatSuffix((gameData.getPopulation() - lastFramePop) * FPS / 2) + "/s");
+                    } else {
+                        setUIText(popDerText, 0 + "/s");
+                    }
                     gameData.setPopulationPerSecREAL((gameData.getPopulation() - lastFramePop) * FPS / 2);
                     //setUIText(popDerText, gameData.formatSuffix(gameData.getPopulationPerSec()) + "/s");
 
@@ -303,21 +307,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         return population * gameData.getBattleBonus();
     }
+    //gameData.setPopulation(gameData.getPopulation() * Math.pow(Math.max(1 + Math.log(battleRatio), 0.05), 0.02));
 
     public void calculateFoodSuply() {
         gameData.setFood(Math.max((gameData.getFood() - 0.01 * gameData.getPopulation()), 1));
         if (gameData.isInBattle()) {
-            gameData.setFoodPerSec(Math.max(gameData.getFoodBonus() * calcFoodPerSec() * .25, 1)); //simulates farmers heading for battle
+            gameData.setFoodPerSec(Math.max(gameData.getFoodBonus() * calcFoodPerSec() * .5, 1)); //simulates farmers heading for battle
         } else {
             gameData.setFoodPerSec(Math.max(gameData.getFoodBonus() * calcFoodPerSec(), 1));
         }
-        if (gameData.getFood() < 1000) {
-            gameData.setPopulation(gameData.getPopulation() * .99);
-        } else if (gameData.getFood() < 10000) {
-            gameData.setPopulation(gameData.getPopulation() * .999);
-        } else if (gameData.getFood() < 100000) {
-            gameData.setPopulation(gameData.getPopulation() * .9999);
-        }
+        gameData.setPopulation(gameData.getPopulation() * Math.min(Math.pow(Math.log(Math.max(gameData.getFood(),100)) / 5 ,0.02),1));
     }
 
     public double calcFoodPerSec() {

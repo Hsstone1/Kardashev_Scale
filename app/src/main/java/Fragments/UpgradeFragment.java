@@ -35,7 +35,8 @@ public class UpgradeFragment extends Fragment {
 
 
 
-        Log.d(TAG, "UPGRADE NAME: " + upgradeTree.findUpgrade("Fire").getUpgradeParent()[0].getUpgradeName());
+        //Log.d(TAG, "UPGRADE NAME: " + upgradeTree.findUpgrade("Fire").getUpgradeParent()[0].getUpgradeName());
+        Log.d(TAG, "UPGRADE NAME: " + Arrays.toString(upgradeTree.findUpgrade("Fire").getUpgradeParent()));
 
 
 

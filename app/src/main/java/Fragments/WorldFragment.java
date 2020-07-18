@@ -223,7 +223,7 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
 //                    Log.d(TAG, "Tile: " + battleTile + " | progress: " + adapter.getProgress(battleTile) + " | Ratio: " + gameData.formatDouble(battleRatio * (1 + Math.log(battleRatio)), 2));
 //                }
                 if (battleRatio < .1) {
-                    toastMessage("You are too weak for this tile. ", Toast.LENGTH_LONG);
+                    toastMessage("You are too weak for this tile. ", Toast.LENGTH_SHORT);
                     tileEnd();
                     break;
                 }
@@ -239,6 +239,7 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
                 if (adapter.getProgress(battleTile) >= 100) {
                     updateAdapterCaptured(battleTile);
                     battleTile++;
+                    updateProgress(captureProgress, 0);
                     tileEnd();
                     break;
                 }
@@ -308,16 +309,15 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
     public void tileEnd() {
         updateButtonVisibility(stopBattleButton, View.GONE);
         updateButtonVisibility(battleButton, View.VISIBLE);
-        updateProgress(captureProgress, 0);
         gameData.setInBattle(false);
 
     }
 
     public int calcTileColor(double battle) {
-        if (battle > 1.2) {
+        if (battle > 1.5) {
             //Log.d(TAG, "COLOR GREEN");
             return getResources().getColor(R.color.lime, null);
-        } else if (battle > 1) {
+        } else if (battle > 1.2) {
             return getResources().getColor(R.color.yellow, null);
         } else if (battle > .7) {
                 return getResources().getColor(R.color.orange, null);
@@ -329,10 +329,8 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
     }
     public void checkTileColors(){
         for (int i = battleTile; i < 100; i++) {
-            //if(adapter.getTextColor(i) != getResources().getColor(R.color.lime, null)) {
-                updateAdapterColor(i, calcTileColor(gameData.getBattle() / adapter.getDefense(i)));
-            //}
-            if(adapter.getDefense(i) / gameData.getBattle() > 20)
+            updateAdapterColor(i, calcTileColor(gameData.getBattle() / adapter.getDefense(i)));
+            if(adapter.getDefense(i) / gameData.getBattle() > 10)
                 break;
 
         }
