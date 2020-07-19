@@ -1,32 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/nav_research"
-        android:textColor="@color/colorAccent"
-        android:textSize="30sp" />
 
-    <ScrollView
-        android:id="@+id/researchTree_scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="40dp">
+        <com.otaliastudios.zoom.ZoomLayout
+            android:id="@+id/upgradetree_zoomlayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:scrollbars="vertical|horizontal"
+            app:alignment="center"
+            app:animationDuration="280"
+            app:flingEnabled="true"
+            app:hasClickableChildren="true"
+            app:horizontalPanEnabled="true"
+            app:maxZoom="2"
+            app:maxZoomType="zoom"
+            app:minZoom="0.1"
+            app:minZoomType="zoom"
+            app:oneFingerScrollEnabled="true"
+            app:overPinchable="true"
+            app:overScrollHorizontal="true"
+            app:overScrollVertical="true"
+            app:scrollEnabled="true"
+            app:threeFingersScrollEnabled="true"
+            app:transformation="centerInside"
+            app:transformationGravity="auto"
+            app:twoFingersScrollEnabled="true"
+            app:verticalPanEnabled="true"
+            app:zoomEnabled="true">
 
-        <LinearLayout
+            <de.blox.graphview.GraphView
+                android:id="@+id/upgradetree_graphview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:lineColor="@android:color/holo_blue_light"
+                app:lineThickness="2dp"
+                app:useMaxSize="true" />
+
+        </com.otaliastudios.zoom.ZoomLayout>
+
+        <TextView
+            android:id="@+id/energy_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+            android:fontFamily="monospace"
+            android:text="Energy: "
+            android:textAlignment="center"
+            android:textColor="@color/colorAccent"
+            app:autoSizeMaxTextSize="18sp"
+            app:autoSizeMinTextSize="8sp"
+            app:autoSizeStepGranularity="2sp"
+            app:autoSizeTextType="uniform" />
 
-        </LinearLayout>
-
-
-    </ScrollView>
-
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

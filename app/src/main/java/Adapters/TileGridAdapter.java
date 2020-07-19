@@ -2,8 +2,8 @@ package Adapters;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,14 +44,12 @@ public class TileGridAdapter extends RecyclerView.Adapter<TileGridAdapter.ViewHo
         this.mDefense = defense;
         this.mResourceWeight = resourceWeight;
         this.mTileCaptureProgress = tileCaptureProgress;
-
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.tile_grid_adapter, parent, false);
-
         return new ViewHolder(view);
     }
 
@@ -61,16 +59,6 @@ public class TileGridAdapter extends RecyclerView.Adapter<TileGridAdapter.ViewHo
         viewHolder.text.setText(mData.get(i));
         viewHolder.text.setTextColor(mTextColors.get(i));
         viewHolder.image.setImageResource(mTileImages.get(i));
-//        viewHolder.image.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                Log.d(TAG, "CLICKED: " + mTileImages.get(i));
-//                //Toast.makeText(context, "Clicked on " + mTileImages.get(i), Toast.LENGTH_SHORT).show();
-//
-//            }
-//        });
-
     }
 
     @Override
@@ -86,9 +74,7 @@ public class TileGridAdapter extends RecyclerView.Adapter<TileGridAdapter.ViewHo
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             text = itemView.findViewById(R.id.tileGrid_text);
-
             image = itemView.findViewById(R.id.tileGrid_icon);
-
             itemView.setOnClickListener(this);
 
         }

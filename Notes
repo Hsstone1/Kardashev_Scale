@@ -1,14 +1,19 @@
 TODO
 	
-	let the player hold the button to increase the battle by 1.5x, similar to egg inc
-	
 	In the battle fragment allow the player to designate a percentage of the population to increasing battleUpdrade
-
-		
 	Have a confirmation when battle button pushed on a tile with a red text
 		
-
-
+		
+		
+	Have an alertDialogue or something similar that allows you to create structures and energy production
+	on each tile
+		Have icons on each tile depicting what is built
+		each tile will have a random amount of water avalibility, wind, thermal ect
+	Have a small icon on the upgrade node if it gives the player a bonus
+	Have a small icon on the upgrade node if it unlocks a new production (to be implemented)
+	
+	Have a bottom sheet apear when upgrade node is clicked that has a buy button, the bonus recieved,
+	what it unlocks, and a description of the upgrade
 
 
 

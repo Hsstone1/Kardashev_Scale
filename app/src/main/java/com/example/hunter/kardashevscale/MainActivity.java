@@ -3,16 +3,22 @@ package com.example.hunter.kardashevscale;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.NonNull;
+
+import com.google.android.material.navigation.NavigationView;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+
+import androidx.appcompat.widget.Toolbar;
+
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -99,15 +105,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     //instantiates all fragments so they can be loaded from the start
-    Fragment worldFragment = new WorldFragment();
-    Fragment productionFragment = new ProductionFragment();
-    Fragment researchFragment = new UpgradeFragment();
-    Fragment battleFragment = new BattleFragment();
-    Fragment timeFragment = new TimeTravelFragment();
-    Fragment statsFragment = new StatsFragment();
-    Fragment guideFragment = new GuideFragment();
-    Fragment shopFragment = new ShopFragment();
-    Fragment settingsFragment = new SettingsFragment();
+    public static final Fragment worldFragment = new WorldFragment();
+    public static final Fragment productionFragment = new ProductionFragment();
+    public static final Fragment upgradeFragment = new UpgradeFragment();
+    public static final Fragment battleFragment = new BattleFragment();
+    public static final Fragment timeFragment = new TimeTravelFragment();
+    public static final Fragment statsFragment = new StatsFragment();
+    public static final Fragment guideFragment = new GuideFragment();
+    public static final Fragment shopFragment = new ShopFragment();
+    public static final Fragment settingsFragment = new SettingsFragment();
     FragmentManager fm = getSupportFragmentManager();
     Fragment active = worldFragment;
 
@@ -207,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 gameData.setFood(Math.max(gameData.getFood() + gameData.getFoodPerSec() / FPS, 0));
                 gameData.setPopulation(gameData.getPopulation() + gameData.getPopulationPerSec() / FPS);
                 gameData.setEnergyPerSec(gameData.getPopulationPerSecREAL() * gameData.getEnergyPerPop() * .25/* * calcTimePenalty(gameData.getYear() * DAYS_IN_YEAR, 1000)*/);
-                gameData.setEnergy(gameData.getEnergy() + (gameData.getEnergyPerSec() / FPS) - gameData.getEnergySpent());
+                gameData.setEnergy(gameData.getEnergy() + (gameData.getEnergyPerSec() / FPS));
                 gameData.setYear(timeGameRate / SECONDS_IN_YEAR);
 
 
@@ -218,12 +224,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 setUIText(battleText, gameData.formatSuffix(gameData.getBattle()));
 
                 if (count % 2 == 0) {
-                    if (gameData.getBattleBonus() * gameData.getTimePenalty() < 1) {
+                    if (gameData.getBattleBonus() * gameData.getTimePenalty() < 100) {
                         setUIText(battleMultiText, gameData.formatDouble(gameData.getTimePenalty() * gameData.getBattleBonus(), 2) + "x");
                     } else {
                         setUIText(battleMultiText, gameData.formatSuffix(gameData.getTimePenalty() * gameData.getBattleBonus()) + "x");
                     }
-                    if(Math.abs(gameData.getPopulationPerSecREAL()) > 1) {
+                    if (Math.abs(gameData.getPopulationPerSecREAL()) > 1) {
                         setUIText(popDerText, gameData.formatSuffix((gameData.getPopulation() - lastFramePop) * FPS / 2) + "/s");
                     } else {
                         setUIText(popDerText, 0 + "/s");
@@ -233,6 +239,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     if (firstCycleRun) {
                         setUIText(((WorldFragment) worldFragment).foodText, "Food: " + gameData.formatSuffix(gameData.getFood()) + " (" + gameData.formatSuffix(gameData.getFoodPerSec()) + "/s)");
+                        setUIText(((UpgradeFragment) upgradeFragment).energyText, getString(R.string.energy_string) + ": " + gameData.formatSuffix(Math.max(gameData.getEnergy(),0)) + " (" + gameData.formatSuffix(gameData.getEnergyPerSec()) + " /s) watts");
 
                     }
                     lastFramePop = gameData.getPopulation();
@@ -252,6 +259,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (count % 30 == 0) {
                     if (!firstCycleRun)
                         firstCycleRun = true;
+
                     //Log.d(TAG, "E/s: " + (gameData.getEnergyPerSec() / FPS));
                 }
 
@@ -281,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fm.beginTransaction().add(R.id.fragment_container, statsFragment, "stats").hide(statsFragment).commit();
             fm.beginTransaction().add(R.id.fragment_container, timeFragment, "time").hide(timeFragment).commit();
             fm.beginTransaction().add(R.id.fragment_container, battleFragment, "battle").hide(battleFragment).commit();
-            fm.beginTransaction().add(R.id.fragment_container, researchFragment, "research").hide(researchFragment).commit();
+            fm.beginTransaction().add(R.id.fragment_container, upgradeFragment, "research").hide(upgradeFragment).commit();
             fm.beginTransaction().add(R.id.fragment_container, productionFragment, "production").hide(productionFragment).commit();
             fm.beginTransaction().add(R.id.fragment_container, worldFragment, "world").commit();
         }
@@ -316,7 +324,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             gameData.setFoodPerSec(Math.max(gameData.getFoodBonus() * calcFoodPerSec(), 1));
         }
-        gameData.setPopulation(gameData.getPopulation() * Math.min(Math.pow(Math.log(Math.max(gameData.getFood(),100)) / 5 ,0.02),1));
+        gameData.setPopulation(gameData.getPopulation() * Math.min(Math.pow(Math.log(Math.max(gameData.getFood(), 100)) / 5, 0.02), 1));
     }
 
     public double calcFoodPerSec() {
@@ -354,8 +362,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             setUIText(civText, getString(R.string.type4_string));
             setUIImage(civIcon, R.drawable.ic_type_4);  //universal
         }
-        setUIText(civProgressText, getString(R.string.civ_progress_string) + " (Type " + gameData.formatDouble(gameData.civScale(), 2) + ")");
-        setUIText(civEnergyText, getString(R.string.energy_string) + ": " + gameData.formatSuffix(gameData.getEnergy()) + " (" + gameData.formatSuffix(gameData.getEnergyPerSec()) + " /s) watts");
+        setUIText(civProgressText, getString(R.string.civ_progress_string) + " (Type " + gameData.formatDouble(Math.max(gameData.civScale(), 0), 2) + ")");
+//        setUIText(civEnergyText, getString(R.string.energy_string) + ": " + gameData.formatSuffix(Math.max(gameData.getEnergy(),0)) + " (" + gameData.formatSuffix(gameData.getEnergyPerSec()) + " /s) watts");
 
 
     }
@@ -405,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             case R.id.nav_research:
-                showFragment(researchFragment);
+                showFragment(upgradeFragment);
                 break;
 
             case R.id.nav_battle:

@@ -6,11 +6,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +46,6 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
     public Button easyCaptureButton;
     public ProgressBar captureProgress;
     TileGridAdapter adapter;
-    //static int pos = 0;
     static int battleTile = 1;  //first uncaptured tile
 
     static boolean stopBattle = false;
@@ -77,7 +76,7 @@ public class WorldFragment extends Fragment implements TileGridAdapter.ItemClick
 
         final ArrayList<String> data = new ArrayList<>();
         final ArrayList<Integer> images = new ArrayList<>();
-        final ArrayList<Integer> textColors = new ArrayList<>();     //R - unkillable, Y - Maybe, G - Likely, W - Captured
+        final ArrayList<Integer> textColors = new ArrayList<>();
         final ArrayList<Boolean> captured = new ArrayList<>();
         final ArrayList<Double> defense = new ArrayList<>();
         final ArrayList<Double> resourceWeight = new ArrayList<>();

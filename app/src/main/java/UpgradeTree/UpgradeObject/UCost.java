@@ -1,6 +1,6 @@
-package UpgradeTree;
+package UpgradeTree.UpgradeObject;
 
-public class UpgradeCost {
+public class UCost {
 
     private double energyCount;
     private double woodCount;
@@ -86,8 +86,8 @@ public class UpgradeCost {
 
 
 
-        public UpgradeCost build(){
-            UpgradeCost cost = new UpgradeCost();
+        public UCost build(){
+            UCost cost = new UCost();
             cost.energyCount = this.energyCount;
             cost.woodCount = this.woodCount;
             cost.copperCount = this.copperCount;
@@ -106,7 +106,7 @@ public class UpgradeCost {
     }
 
     //sets the default values
-    private UpgradeCost(){
+    private UCost(){
         this.energyCount = 0;
         this.woodCount = 0;
         this.copperCount = 0;
@@ -184,7 +184,7 @@ private double tileCount;
     private double exoticMaterialCount;
 
 
-    public UpgradeCost(double tileCount, double energyCount, double woodCount, double copperCount, double bronzeCount, double ironCount, double refinedMetalCount, double preciousMetalCount, double plasticsCount, double uraniumCount, double fuelCount, double adamantiumCount, double exoticMaterialCount) {
+    public UCost(double tileCount, double energyCount, double woodCount, double copperCount, double bronzeCount, double ironCount, double refinedMetalCount, double preciousMetalCount, double plasticsCount, double uraniumCount, double fuelCount, double adamantiumCount, double exoticMaterialCount) {
         this.tileCount = tileCount;
         this.energyCount = energyCount;
         this.woodCount = woodCount;

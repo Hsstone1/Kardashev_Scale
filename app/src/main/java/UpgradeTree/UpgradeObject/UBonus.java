@@ -1,8 +1,6 @@
-package UpgradeTree;
+package UpgradeTree.UpgradeObject;
 
-import android.os.Build;
-
-public class UpgradeBonus {
+public class UBonus {
     private double battleBonus;
     private double foodBonus;
     private double productionBonus;
@@ -35,8 +33,8 @@ public class UpgradeBonus {
             return this;
         }
 
-        public UpgradeBonus build() {
-            UpgradeBonus bonus = new UpgradeBonus();
+        public UBonus build() {
+            UBonus bonus = new UBonus();
             bonus.battleBonus = this.battleBonus;
             bonus.foodBonus = this.foodBonus;
             bonus.productionBonus = this.productionBonus;
@@ -46,7 +44,7 @@ public class UpgradeBonus {
     }
 
     //sets the default values
-    private UpgradeBonus() {
+    private UBonus() {
         this.battleBonus = 0;
         this.foodBonus = 0;
         this.productionBonus = 0;
